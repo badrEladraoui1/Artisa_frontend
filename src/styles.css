@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --light-blue: #8ecae6;
+    --bright-blue: #219ebc;
+    --dark-blue: #023047;
+    --yellow: #ffb703;
+    --orange: #fb8500;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg font-semibold transition-all duration-300;
+  }
+  
+  .btn-primary {
+    @apply bg-orange text-white hover:bg-yellow hover:-translate-y-0.5;
+  }
+
+  .container {
+    @apply max-w-7xl mx-auto px-4;
+  }
+
+  .section {
+    @apply py-16;
+  }
+}
