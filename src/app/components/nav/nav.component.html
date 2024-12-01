@@ -1,47 +1,78 @@
 <nav class="bg-white fixed w-full top-0 z-50 shadow-sm">
   <div class="max-w-7xl mx-auto px-4">
     <div class="flex justify-between items-center h-16">
-      <a routerLink="/" class="text-2xl font-bold text-dark-blue">
-        Artisa
-      </a>
+      <a routerLink="/" class="text-2xl font-bold text-dark-blue"> Artisa </a>
 
-      <button 
-        (click)="toggleMenu()" 
+      <button
+        (click)="toggleMenu()"
         class="lg:hidden text-2xl text-dark-blue focus:outline-none"
-        aria-label="Toggle menu">
+        aria-label="Toggle menu"
+      >
         ☰
       </button>
 
-      <div 
-        [class.hidden]="!isMenuOpen" 
-        class="absolute lg:static top-16 left-0 right-0 lg:flex bg-white lg:bg-transparent shadow-md lg:shadow-none">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:gap-8 p-4 lg:p-0">
-          <a routerLink="/" 
-             routerLinkActive="text-orange"
-             [routerLinkActiveOptions]="{exact: true}"
-             class="py-2 lg:py-0 text-dark-blue hover:text-bright-blue transition-colors">
+      <div
+        [class.hidden]="!isMenuOpen"
+        class="absolute lg:static top-16 left-0 right-0 lg:flex bg-white lg:bg-transparent shadow-md lg:shadow-none"
+      >
+        <div
+          class="flex flex-col lg:flex-row lg:items-center lg:gap-8 p-4 lg:p-0"
+        >
+          <a
+            routerLink="/"
+            routerLinkActive="text-orange"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="py-2 lg:py-0 text-dark-blue hover:text-bright-blue transition-colors"
+          >
             Home
           </a>
-          <a routerLink="/browse" 
-             routerLinkActive="text-orange"
-             class="py-2 lg:py-0 text-dark-blue hover:text-bright-blue transition-colors">
+          <a
+            routerLink="/browse"
+            routerLinkActive="text-orange"
+            class="py-2 lg:py-0 text-dark-blue hover:text-bright-blue transition-colors"
+          >
             Browse Artisans
           </a>
-          <a routerLink="/about" 
-             routerLinkActive="text-orange"
-             class="py-2 lg:py-0 text-dark-blue hover:text-bright-blue transition-colors">
+          <a
+            routerLink="/about"
+            routerLinkActive="text-orange"
+            class="py-2 lg:py-0 text-dark-blue hover:text-bright-blue transition-colors"
+          >
             About Us
           </a>
-          <a routerLink="/contact" 
-             routerLinkActive="text-orange"
-             class="py-2 lg:py-0 text-dark-blue hover:text-bright-blue transition-colors">
+          <a
+            routerLink="/contact"
+            routerLinkActive="text-orange"
+            class="py-2 lg:py-0 text-dark-blue hover:text-bright-blue transition-colors"
+          >
             Contact
           </a>
-          <a routerLink="/login" 
-             routerLinkActive="bg-yellow"
-             class="mt-2 lg:mt-0 px-4 py-2 bg-orange text-white rounded-lg hover:bg-yellow transition-colors text-center">
+          <!-- <a
+            routerLink="/login"
+            routerLinkActive="bg-yellow"
+            class="mt-2 lg:mt-0 px-4 py-2 bg-orange text-white rounded-lg hover:bg-yellow transition-colors text-center"
+          >
             Login
-          </a>
+          </a> -->
+          <!-- Conditional Login/Logout Button -->
+          <ng-container *ngIf="!isLoggedIn; else logoutButton">
+            <a
+              routerLink="/login"
+              routerLinkActive="bg-yellow"
+              class="mt-2 lg:mt-0 px-4 py-2 bg-orange text-white rounded-lg hover:bg-yellow transition-colors text-center"
+            >
+              Login
+            </a>
+          </ng-container>
+
+          <ng-template #logoutButton>
+            <button
+              (click)="logout()"
+              class="mt-2 lg:mt-0 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-center"
+            >
+              Logout
+            </button>
+          </ng-template>
         </div>
       </div>
     </div>

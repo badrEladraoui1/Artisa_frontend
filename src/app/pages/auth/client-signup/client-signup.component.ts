@@ -1,130 +1,130 @@
 import { Component } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { RouterModule } from "@angular/router";
+import { RouterModule, Router } from "@angular/router";
 import {
   FormBuilder,
   FormGroup,
   Validators,
   ReactiveFormsModule,
 } from "@angular/forms";
-
+import { AuthService } from "../../../components/services/auth.service";
 @Component({
   selector: "app-client-signup",
   standalone: true,
   imports: [CommonModule, RouterModule, ReactiveFormsModule],
-  // template: `
-  //   <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-  //     <div class="max-w-2xl mx-auto">
-  //       <div class="text-center">
-  //         <h2 class="text-3xl font-bold text-dark-blue">Find Your Perfect Artisan</h2>
-  //         <p class="mt-2 text-gray-600">Create an account to connect with skilled craftspeople</p>
-  //       </div>
-
-  //       <div class="mt-8 bg-white py-8 px-4 shadow-md rounded-lg sm:px-10">
-  //         <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="space-y-6">
-  //           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-  //             <div>
-  //               <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name</label>
-  //               <input
-  //                 type="text"
-  //                 id="fullName"
-  //                 formControlName="fullName"
-  //                 class="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-bright-blue focus:outline-none focus:ring-bright-blue">
-  //             </div>
-
-  //             <div>
-  //               <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-  //               <input
-  //                 type="email"
-  //                 id="email"
-  //                 formControlName="email"
-  //                 class="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-bright-blue focus:outline-none focus:ring-bright-blue">
-  //             </div>
-
-  //             <div>
-  //               <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
-  //               <input
-  //                 type="tel"
-  //                 id="phone"
-  //                 formControlName="phone"
-  //                 class="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-bright-blue focus:outline-none focus:ring-bright-blue">
-  //             </div>
-
-  //             <div>
-  //               <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-  //               <input
-  //                 type="password"
-  //                 id="password"
-  //                 formControlName="password"
-  //                 class="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-bright-blue focus:outline-none focus:ring-bright-blue">
-  //             </div>
-
-  //             <div class="md:col-span-2">
-  //               <label for="address" class="block text-sm font-medium text-gray-700">Address (Optional)</label>
-  //               <textarea
-  //                 id="address"
-  //                 formControlName="address"
-  //                 rows="3"
-  //                 class="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-bright-blue focus:outline-none focus:ring-bright-blue"></textarea>
-  //             </div>
-
-  //             <div class="md:col-span-2">
-  //               <label for="profilePicture" class="block text-sm font-medium text-gray-700">Profile Picture (Optional)</label>
-  //               <input
-  //                 type="file"
-  //                 id="profilePicture"
-  //                 accept="image/*"
-  //                 class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-bright-blue file:text-white hover:file:bg-light-blue">
-  //             </div>
-  //           </div>
-
-  //           <div class="flex items-center">
-  //             <input
-  //               type="checkbox"
-  //               id="terms"
-  //               formControlName="terms"
-  //               class="h-4 w-4 rounded border-gray-300 text-bright-blue focus:ring-bright-blue">
-  //             <label for="terms" class="ml-2 block text-sm text-gray-700">
-  //               I agree to the <a href="#" class="text-bright-blue hover:text-orange">Terms of Service</a> and <a href="#" class="text-bright-blue hover:text-orange">Privacy Policy</a>
-  //             </label>
-  //           </div>
-
-  //           <button
-  //             type="submit"
-  //             [disabled]="!signupForm.valid"
-  //             class="w-full btn btn-primary">
-  //             Create Account
-  //           </button>
-  //         </form>
-
-  //         <p class="mt-4 text-center text-sm text-gray-600">
-  //           Already have an account?
-  //           <a routerLink="/login" class="text-bright-blue hover:text-orange">Sign in</a>
-  //         </p>
-  //       </div>
-  //     </div>
-  //   </div>
-  // `
   templateUrl: "./client-signup.component.html",
 })
 export class ClientSignupComponent {
   signupForm: FormGroup;
+  errorMessage: string = "";
+  isLoading: boolean = false;
+  successMessage: string = "";
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
     this.signupForm = this.fb.group({
-      fullName: ["", [Validators.required, Validators.minLength(2)]],
+      nomComplet: ["", [Validators.required, Validators.minLength(2)]],
       email: ["", [Validators.required, Validators.email]],
       phone: ["", [Validators.required, Validators.pattern("^[0-9]{10}$")]],
-      password: ["", [Validators.required, Validators.minLength(8)]],
-      address: [""],
+      motDePasse: ["", [Validators.required, Validators.minLength(8)]],
+      address: ["", Validators.required],
       terms: [false, Validators.requiredTrue],
     });
   }
 
   onSubmit() {
     if (this.signupForm.valid) {
-      console.log(this.signupForm.value);
-      // Handle signup
+      this.isLoading = true;
+      this.errorMessage = "";
+      this.successMessage = "";
+
+      const formData = {
+        nomComplet: this.signupForm.get("nomComplet")?.value,
+        email: this.signupForm.get("email")?.value,
+        phone: this.signupForm.get("phone")?.value,
+        address: this.signupForm.get("address")?.value,
+        motDePasse: this.signupForm.get("motDePasse")?.value,
+      };
+
+      this.authService.signupClient(formData).subscribe({
+        next: (response) => {
+          if (response.success) {
+            // Show success message
+            this.successMessage = response.message;
+
+            // Navigate after a short delay
+            setTimeout(() => {
+              this.router.navigate(["/login"], {
+                queryParams: {
+                  registered: "true",
+                  type: "client",
+                },
+              });
+            }, 2000);
+          }
+        },
+        error: (error) => {
+          console.error("Signup failed", error);
+          // If it's a 200 status but parsing failed, it's actually a success
+          if (error.status === 200) {
+            this.successMessage = "Registration successful! You can now login.";
+            setTimeout(() => {
+              this.router.navigate(["/login"], {
+                queryParams: {
+                  registered: "true",
+                  type: "client",
+                },
+              });
+            }, 2000);
+          } else {
+            this.errorMessage =
+              error.error?.message || "Registration failed. Please try again.";
+          }
+          this.isLoading = false;
+        },
+        complete: () => {
+          this.isLoading = false;
+        },
+      });
     }
   }
+
+  // onSubmit() {
+  //   if (this.signupForm.valid) {
+  //     this.isLoading = true;
+  //     this.errorMessage = "";
+
+  //     const formData = {
+  //       nomComplet: this.signupForm.get("nomComplet")?.value,
+  //       email: this.signupForm.get("email")?.value,
+  //       phone: this.signupForm.get("phone")?.value,
+  //       address: this.signupForm.get("address")?.value,
+  //       motDePasse: this.signupForm.get("motDePasse")?.value,
+  //     };
+
+  //     this.authService.signupClient(formData).subscribe({
+  //       next: (response) => {
+  //         console.log("Signup successful", response);
+  //         this.router.navigate(["/login"], {
+  //           queryParams: {
+  //             registered: "true",
+  //             type: "client",
+  //           },
+  //         });
+  //       },
+  //       error: (error) => {
+  //         console.error("Signup failed", error);
+  //         this.errorMessage =
+  //           error.error?.message || "Registration failed. Please try again.";
+  //         this.isLoading = false;
+  //       },
+  //       complete: () => {
+  //         this.isLoading = false;
+  //       },
+  //     });
+  //   }
+  // }
 }

@@ -1,0 +1,47 @@
+<div class="bg-gray-50 rounded-lg p-4">
+  <div class="flex justify-between items-start">
+    <div>
+      <h3 class="text-lg font-semibold text-dark-blue">
+        {{ request?.clientName }}
+      </h3>
+      <p class="text-bright-blue font-medium">{{ request?.service }}</p>
+    </div>
+    <span
+      class="px-2 py-1 text-sm rounded-full"
+      [ngClass]="{
+        'bg-yellow text-dark-blue': request?.status === 'pending',
+        'bg-green-500 text-white': request?.status === 'accepted',
+        'bg-red-500 text-white': request?.status === 'declined'
+      }"
+    >
+      {{ request?.status | titlecase }}
+    </span>
+  </div>
+
+  <div class="mt-4 space-y-2 text-sm text-gray-600">
+    <p>📅 {{ request?.date }} at {{ request?.time }}</p>
+    <p>📍 {{ request?.location }}</p>
+    <p class="text-gray-700">{{ request?.description }}</p>
+  </div>
+
+  <div class="flex justify-end gap-2 mt-4">
+    <button
+      (click)="accept.emit(request?.id)"
+      class="btn bg-green-500 text-white hover:bg-green-600"
+    >
+      Accept
+    </button>
+    <button
+      (click)="decline.emit(request?.id)"
+      class="btn bg-red-500 text-white hover:bg-red-600"
+    >
+      Decline
+    </button>
+    <button
+      (click)="moreInfo.emit(request?.id)"
+      class="btn bg-bright-blue text-white hover:bg-light-blue"
+    >
+      More Info
+    </button>
+  </div>
+</div>

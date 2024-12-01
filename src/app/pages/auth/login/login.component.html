@@ -7,32 +7,69 @@
 
     <div class="mt-8 bg-white py-8 px-4 shadow-md rounded-lg sm:px-10">
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- Username Input -->
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700"
-            >Email</label
+          <label
+            for="nomComplet"
+            class="block text-sm font-medium text-gray-700"
+            >Username</label
           >
           <input
-            type="email"
-            id="email"
-            formControlName="email"
+            type="text"
+            id="nomComplet"
+            formControlName="nomComplet"
             class="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-bright-blue focus:outline-none focus:ring-bright-blue"
-            placeholder="your@email.com"
+            placeholder="your full name"
           />
+          <!-- Error Messages for Username -->
+          <div
+            *ngIf="
+              loginForm.get('nomComplet')?.touched &&
+              loginForm.get('nomComplet')?.invalid
+            "
+            class="text-sm text-red-500 mt-1"
+          >
+            <p *ngIf="loginForm.get('nomComplet')?.errors?.['required']">
+              Username is required.
+            </p>
+            <!-- <p *ngIf="loginForm.get('nomComplet')?.errors?.['minLength']">
+              Please enter a valid username.
+            </p> -->
+          </div>
         </div>
 
+        <!-- Password Input -->
         <div>
-          <label for="password" class="block text-sm font-medium text-gray-700"
+          <label
+            for="motDePasse"
+            class="block text-sm font-medium text-gray-700"
             >Password</label
           >
           <input
             type="password"
-            id="password"
-            formControlName="password"
+            id="motDePasse"
+            formControlName="motDePasse"
             class="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-bright-blue focus:outline-none focus:ring-bright-blue"
             placeholder="••••••••"
           />
+          <!-- Error Messages for Password -->
+          <div
+            *ngIf="
+              loginForm.get('motDePasse')?.touched &&
+              loginForm.get('motDePasse')?.invalid
+            "
+            class="text-sm text-red-500 mt-1"
+          >
+            <p *ngIf="loginForm.get('motDePasse')?.errors?.['required']">
+              Password is required.
+            </p>
+            <p *ngIf="loginForm.get('motDePasse')?.errors?.['required']">
+              Password must be at least 8 characters long.
+            </p>
+          </div>
         </div>
 
+        <!-- Remember Me and Forgot Password -->
         <div class="flex items-center justify-between">
           <div class="flex items-center">
             <input
@@ -49,6 +86,7 @@
           >
         </div>
 
+        <!-- Submit Button -->
         <button
           type="submit"
           [disabled]="!loginForm.valid"

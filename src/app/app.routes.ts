@@ -1,40 +1,95 @@
-import { Routes } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from "@angular/router";
 
-export const routes: Routes = [
+import { HomeComponent } from "./pages/home/home.component";
+import { BrowseArtisansComponent } from "./pages/browse-artisans/browse-artisans.component";
+import { ArtisanDetailComponent } from "./pages/artisan-detail/artisan-detail.component";
+import { AboutComponent } from "./pages/about/about.component";
+import { ContactComponent } from "./pages/contact/contact.component";
+import { LoginComponent } from "./pages/auth/login/login.component";
+import { ClientSignupComponent } from "./pages/auth/client-signup/client-signup.component";
+import { ArtisanSignupComponent } from "./pages/auth/artisan-signup/artisan-signup.component";
+import { ArtisanDashboardComponent } from "./pages/artisan-dashboard/artisan-dashboard.component";
+import { ServicesComponent } from "./pages/artisan-dashboard/pages/services/services.component";
+import { RequestCardComponent } from "./pages/artisan-dashboard/components/client-requests/request-card.component";
+import { ProfileComponent as ArtisanProfileComponent } from "./pages/artisan-dashboard/pages/profile/profile.component";
+import { ProfileComponent as ClientProfileComponent } from "./pages/client-dashboard/pages/profile/profile.component";
+import { ClientDashboardComponent } from "./pages/client-dashboard/client-dashboard.component";
+import { PurchasesComponent } from "./pages/client-dashboard/pages/purchases/purchases.component";
+import { RequestsComponent } from "./pages/artisan-dashboard/pages/requests/requests.component";
+
+export const routes = [
   {
-    path: '',
-    loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent)
+    path: "",
+    component: HomeComponent,
   },
   {
-    path: 'browse',
-    loadComponent: () => import('./pages/browse-artisans/browse-artisans.component').then(m => m.BrowseArtisansComponent)
+    path: "browse",
+    component: BrowseArtisansComponent,
   },
   {
-    path: 'artisan/:id',
-    loadComponent: () => import('./pages/artisan-detail/artisan-detail.component').then(m => m.ArtisanDetailComponent)
+    path: "artisan/:id",
+    component: ArtisanDetailComponent,
   },
   {
-    path: 'about',
-    loadComponent: () => import('./pages/about/about.component').then(m => m.AboutComponent)
+    path: "about",
+    component: AboutComponent,
   },
   {
-    path: 'contact',
-    loadComponent: () => import('./pages/contact/contact.component').then(m => m.ContactComponent)
+    path: "contact",
+    component: ContactComponent,
   },
   {
-    path: 'login',
-    loadComponent: () => import('./pages/auth/login/login.component').then(m => m.LoginComponent)
+    path: "login",
+    component: LoginComponent,
   },
   {
-    path: 'signup/client',
-    loadComponent: () => import('./pages/auth/client-signup/client-signup.component').then(m => m.ClientSignupComponent)
+    path: "signup/client",
+    component: ClientSignupComponent,
   },
   {
-    path: 'signup/artisan',
-    loadComponent: () => import('./pages/auth/artisan-signup/artisan-signup.component').then(m => m.ArtisanSignupComponent)
+    path: "signup/artisan",
+    component: ArtisanSignupComponent,
   },
   {
-    path: '**',
-    redirectTo: ''
-  }
+    path: "artisan/dashboard/page",
+    component: ArtisanDashboardComponent,
+    children: [
+      {
+        path: "services",
+        component: ServicesComponent,
+      },
+      {
+        path: "requests",
+        component: RequestCardComponent,
+      },
+      {
+        path: "profile",
+        component: ArtisanProfileComponent,
+      },
+    ],
+  },
+  {
+    path: "client/dashboard/page",
+    component: ClientDashboardComponent,
+    children: [
+      {
+        path: "purchases",
+        component: PurchasesComponent,
+      },
+      {
+        path: "requests",
+        component: RequestsComponent,
+      },
+      {
+        path: "profile",
+        component: ClientProfileComponent,
+      },
+    ],
+  },
+  {
+    path: "**",
+    redirectTo: "",
+  },
 ];
+
+export const appRoutes = provideRouter(routes, withComponentInputBinding());

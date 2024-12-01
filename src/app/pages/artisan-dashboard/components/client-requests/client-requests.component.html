@@ -1,0 +1,15 @@
+<div class="bg-white rounded-lg shadow p-6">
+  <h2 class="text-xl font-bold text-dark-blue mb-6">Client Requests</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    @for (request of requests; track request.id){
+    <app-request-card
+      [request]="request"
+      (accept)="onAcceptRequest($event)"
+      (decline)="onDeclineRequest($event)"
+      (moreInfo)="onRequestMoreInfo($event)"
+    >
+    </app-request-card>
+    }
+  </div>
+</div>
