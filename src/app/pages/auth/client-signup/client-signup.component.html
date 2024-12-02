@@ -10,12 +10,26 @@
     </div>
 
     <div class="mt-8 bg-white py-8 px-4 shadow-md rounded-lg sm:px-10">
-      <!-- Error Message Display -->
+      <!-- Error Message Display
       <div
         *ngIf="errorMessage"
         class="mb-4 p-4 text-red-700 bg-red-100 rounded-lg"
       >
         {{ errorMessage }}
+      </div> -->
+      <div
+        *ngIf="errorMessage"
+        class="mb-4 p-4 text-red-700 bg-red-100 rounded-lg"
+      >
+        {{ errorMessage }}
+      </div>
+
+      <!-- Success Message Display -->
+      <div
+        *ngIf="successMessage"
+        class="mb-4 p-4 text-green-700 bg-green-100 rounded-lg"
+      >
+        {{ successMessage }}
       </div>
 
       <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="space-y-6">

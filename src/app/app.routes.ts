@@ -1,4 +1,9 @@
-import { provideRouter, withComponentInputBinding } from "@angular/router";
+import {
+  provideRouter,
+  Route,
+  Routes,
+  withComponentInputBinding,
+} from "@angular/router";
 
 import { HomeComponent } from "./pages/home/home.component";
 import { BrowseArtisansComponent } from "./pages/browse-artisans/browse-artisans.component";
@@ -17,7 +22,7 @@ import { ClientDashboardComponent } from "./pages/client-dashboard/client-dashbo
 import { PurchasesComponent } from "./pages/client-dashboard/pages/purchases/purchases.component";
 import { RequestsComponent } from "./pages/artisan-dashboard/pages/requests/requests.component";
 
-export const routes = [
+export const routes: Routes = [
   {
     path: "",
     component: HomeComponent,
@@ -55,6 +60,11 @@ export const routes = [
     component: ArtisanDashboardComponent,
     children: [
       {
+        path: "",
+        redirectTo: "services",
+        pathMatch: "full",
+      },
+      {
         path: "services",
         component: ServicesComponent,
       },
@@ -72,6 +82,11 @@ export const routes = [
     path: "client/dashboard/page",
     component: ClientDashboardComponent,
     children: [
+      {
+        path: "",
+        redirectTo: "purchases",
+        pathMatch: "full",
+      },
       {
         path: "purchases",
         component: PurchasesComponent,
