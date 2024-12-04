@@ -17,6 +17,9 @@ import {
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
+  errorMessage: string = "";
+  showError: boolean = false;
+  isLoading: boolean = false;
   private authService = inject(AuthService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
@@ -29,21 +32,27 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Redirect if already logged in
     if (this.authService.isLoggedIn()) {
       this.router.navigate(["/dashboard"]);
     }
   }
 
+  showErrorMessage(message: string) {
+    this.errorMessage = message;
+    this.showError = true;
+    setTimeout(() => {
+      this.showError = false;
+      this.errorMessage = "";
+    }, 3000);
+  }
+
   onSubmit() {
     if (this.loginForm.valid) {
+      this.isLoading = true;
       const { nomComplet, motDePasse } = this.loginForm.value;
 
       this.authService.login(nomComplet, motDePasse).subscribe({
         next: (response) => {
-          console.log("Login successful:", response);
-
-          // Check user role and navigate accordingly
           const user = this.authService.currentUserValue;
           if (user?.roles.includes("ARTISAN")) {
             this.router.navigate(["artisan/dashboard/page"]);
@@ -56,9 +65,16 @@ export class LoginComponent implements OnInit {
           }
         },
         error: (error) => {
-          console.error("Login failed:", error);
-          // You might want to show a more user-friendly error message
-          alert("Login failed. Please check your credentials and try again.");
+          let errorMsg =
+            "Login failed. Please check your credentials and try again.";
+          if (error.error?.message) {
+            errorMsg = error.error.message;
+          }
+          this.showErrorMessage(errorMsg);
+          this.isLoading = false;
+        },
+        complete: () => {
+          this.isLoading = false;
         },
       });
     }
