@@ -45,9 +45,28 @@ export class AuthService {
       );
   }
 
-  signupArtisan(data: any): Observable<any> {
+  // signupArtisan(data: any): Observable<any> {
+  //   return this.http
+  //     .post(`${this.apiUrl}/signup/artisan`, data, {
+  //       observe: "response",
+  //       responseType: "text",
+  //     })
+  //     .pipe(
+  //       map((response: HttpResponse<any>) => {
+  //         if (response.status === 200) {
+  //           return {
+  //             success: true,
+  //             message: "Registration successful! You can now login.",
+  //           };
+  //         }
+  //         throw new Error("Registration failed");
+  //       })
+  //     );
+  // }
+
+  signupArtisan(formData: FormData): Observable<any> {
     return this.http
-      .post(`${this.apiUrl}/signup/artisan`, data, {
+      .post(`${this.apiUrl}/signup/artisan`, formData, {
         observe: "response",
         responseType: "text",
       })
@@ -56,7 +75,8 @@ export class AuthService {
           if (response.status === 200) {
             return {
               success: true,
-              message: "Registration successful! You can now login.",
+              message:
+                response.body || "Registration successful! You can now login.",
             };
           }
           throw new Error("Registration failed");

@@ -80,8 +80,11 @@ export class ClientSignupComponent {
               });
             }, 2000);
           } else {
-            this.errorMessage =
-              error.error?.message || "Registration failed. Please try again.";
+            setTimeout(() => {
+              this.errorMessage =
+                error.error?.message ||
+                "Registration failed. Please try again.";
+            }, 2000);
           }
           this.isLoading = false;
         },

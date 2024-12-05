@@ -29,6 +29,7 @@ export interface SignUpDtoArtisan {
   motDePasse: string;
   metier: string;
   description: string;
+  previewUrl: string;
 }
 
 export interface SignUpDtoClient {
