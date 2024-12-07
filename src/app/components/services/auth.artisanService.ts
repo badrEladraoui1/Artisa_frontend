@@ -18,9 +18,4 @@ export class ArtisanService {
       }
     );
   }
-
-  //   // Add other artisan-related methods here
-  //   getArtisanStats(artisanId: number): Observable<any> {
-  //     return this.http.get(`${this.apiUrl}/artisans/${artisanId}/stats`);
-  //   }
 }

@@ -94,40 +94,4 @@ export class ClientSignupComponent {
       });
     }
   }
-
-  // onSubmit() {
-  //   if (this.signupForm.valid) {
-  //     this.isLoading = true;
-  //     this.errorMessage = "";
-
-  //     const formData = {
-  //       nomComplet: this.signupForm.get("nomComplet")?.value,
-  //       email: this.signupForm.get("email")?.value,
-  //       phone: this.signupForm.get("phone")?.value,
-  //       address: this.signupForm.get("address")?.value,
-  //       motDePasse: this.signupForm.get("motDePasse")?.value,
-  //     };
-
-  //     this.authService.signupClient(formData).subscribe({
-  //       next: (response) => {
-  //         console.log("Signup successful", response);
-  //         this.router.navigate(["/login"], {
-  //           queryParams: {
-  //             registered: "true",
-  //             type: "client",
-  //           },
-  //         });
-  //       },
-  //       error: (error) => {
-  //         console.error("Signup failed", error);
-  //         this.errorMessage =
-  //           error.error?.message || "Registration failed. Please try again.";
-  //         this.isLoading = false;
-  //       },
-  //       complete: () => {
-  //         this.isLoading = false;
-  //       },
-  //     });
-  //   }
-  // }
 }
