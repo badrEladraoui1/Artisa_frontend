@@ -1,69 +1,99 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ServiceCardComponent } from './service-card.component';
-import { AddServiceModalComponent } from './add-service-modal.component';
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { ServiceCardComponent } from "./service-card.component";
+import { AddServiceModalComponent } from "./add-service-modal.component";
+import {
+  ServiceDTO,
+  ServiceResponseDTO,
+} from "../../../../models/service.model";
+import { ArtisanServiceService } from "../../../../components/services/artisan-service.service";
+import { AuthService } from "../../../../components/services/auth.service";
 
 @Component({
-  selector: 'app-services-management',
+  selector: "app-services-management",
   standalone: true,
   imports: [CommonModule, ServiceCardComponent, AddServiceModalComponent],
-  template: `
-    <div class="bg-white rounded-lg shadow p-6">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-bold text-dark-blue">Services Management</h2>
-        <button 
-          (click)="showAddServiceModal = true"
-          class="btn btn-primary">
-          Add New Service
-        </button>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <app-service-card
-          *ngFor="let service of services"
-          [service]="service"
-          (edit)="onEditService($event)"
-          (delete)="onDeleteService($event)">
-        </app-service-card>
-      </div>
-
-      <app-add-service-modal
-        *ngIf="showAddServiceModal"
-        (close)="showAddServiceModal = false"
-        (save)="onSaveService($event)">
-      </app-add-service-modal>
-    </div>
-  `
+  templateUrl: "./services-management.component.html",
 })
-export class ServicesManagementComponent {
+export class ServicesManagementComponent implements OnInit {
+  services: ServiceResponseDTO[] = [];
   showAddServiceModal = false;
-  services = [
-    {
-      id: '1',
-      name: 'Custom Furniture Design',
-      description: 'Bespoke furniture pieces tailored to your needs',
-      price: 'From $1,500',
-      image: 'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=500&q=80'
-    },
-    {
-      id: '2',
-      name: 'Furniture Restoration',
-      description: 'Expert restoration of antique pieces',
-      price: 'From $500',
-      image: 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=500&q=80'
+  showEditModal = false;
+  selectedService?: ServiceResponseDTO;
+
+  constructor(
+    private artisanService: ArtisanServiceService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit() {
+    this.loadServices();
+  }
+
+  loadServices() {
+    const currentUser = this.authService.currentUserValue;
+    if (currentUser && currentUser.id) {
+      this.artisanService.getArtisanServices(currentUser.id).subscribe({
+        next: (services) => {
+          this.services = services;
+        },
+        error: (error) => {
+          console.error("Error loading services:", error);
+        },
+      });
     }
-  ];
-
-  onEditService(service: any) {
-    console.log('Edit service:', service);
   }
 
-  onDeleteService(serviceId: string) {
-    console.log('Delete service:', serviceId);
-  }
-
-  onSaveService(service: any) {
-    console.log('Save service:', service);
+  closeModal() {
     this.showAddServiceModal = false;
+    this.showEditModal = false;
+    this.selectedService = undefined;
+  }
+
+  onEditService(service: ServiceResponseDTO) {
+    this.selectedService = service;
+    this.showEditModal = true;
+  }
+
+  onDeleteService(serviceId: number) {
+    if (confirm("Are you sure you want to delete this service?")) {
+      this.artisanService.deleteService(serviceId).subscribe({
+        next: () => {
+          this.loadServices();
+          window.location.reload();
+        },
+        error: (error) => {
+          console.error("Error deleting service:", error);
+        },
+      });
+    }
+  }
+
+  onSaveService(serviceData: ServiceDTO) {
+    if (this.showEditModal && this.selectedService) {
+      this.artisanService
+        .updateService(this.selectedService.id!, serviceData)
+        .subscribe({
+          next: () => {
+            this.loadServices();
+            this.closeModal();
+            window.location.reload();
+          },
+          error: (error) => {
+            console.error("Error updating service:", error);
+          },
+        });
+    } else {
+      this.artisanService.createService(serviceData).subscribe({
+        next: () => {
+          this.loadServices();
+          this.closeModal();
+          window.location.reload();
+        },
+        error: (error) => {
+          console.error("Error creating service:", error);
+        },
+      });
+    }
   }
 }

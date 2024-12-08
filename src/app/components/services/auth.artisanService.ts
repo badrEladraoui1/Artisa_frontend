@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { Observable } from "rxjs";
+import { HttpClient, HttpResponse } from "@angular/common/http";
+import { map, Observable } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -17,5 +17,24 @@ export class ArtisanService {
         responseType: "blob",
       }
     );
+  }
+
+  updateProfile(id: number, profileData: any): Observable<any> {
+    return this.http
+      .put(`${this.apiUrl}/${id}/profile`, profileData, {
+        responseType: "text", // Expect text response
+        observe: "response", // Get full response
+      })
+      .pipe(
+        map((response: HttpResponse<any>) => {
+          if (response.status === 200) {
+            return {
+              success: true,
+              message: response.body || "Profile updated successfully",
+            };
+          }
+          throw new Error("Update failed");
+        })
+      );
   }
 }
