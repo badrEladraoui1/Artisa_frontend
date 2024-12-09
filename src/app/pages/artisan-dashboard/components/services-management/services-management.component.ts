@@ -2,6 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ServiceCardComponent } from "./service-card.component";
 import { AddServiceModalComponent } from "./add-service-modal.component";
+import { firstValueFrom } from "rxjs";
+
 import {
   ServiceDTO,
   ServiceResponseDTO,
@@ -54,6 +56,27 @@ export class ServicesManagementComponent implements OnInit {
     this.selectedService = service;
     this.showEditModal = true;
   }
+
+  // onDeleteService(serviceId: number) {
+  //   if (confirm("Are you sure you want to delete this service?")) {
+  //     this.artisanService.deleteService(serviceId).subscribe({
+  //       next: () => {
+  //         this.loadServices();
+  //         this.reloadPage();
+  //       },
+  //       error: (error) => {
+  //         console.error("Error deleting service:", error);
+  //       },
+  //     });
+  //   }
+  // }
+
+  // reloadPage() {
+  //   // Use setTimeout to delay the page reload
+  //   setTimeout(() => {
+  //     window.location.reload();
+  //   }, 4000);
+  // }
 
   onDeleteService(serviceId: number) {
     if (confirm("Are you sure you want to delete this service?")) {

@@ -51,7 +51,19 @@ export class AddServiceModalComponent implements OnInit {
     }
   }
 
-  onSubmit() {
+  // onSubmit() {
+  //   if (this.serviceForm.valid) {
+  //     const serviceData: ServiceDTO = {
+  //       titre: this.serviceForm.value.titre,
+  //       description: this.serviceForm.value.description,
+  //       tarif: Number(this.serviceForm.value.tarif),
+  //       servicePicture: this.selectedFile,
+  //     };
+
+  //     this.save.emit(serviceData);
+  //   }
+  // }
+  async onSubmit() {
     if (this.serviceForm.valid) {
       const serviceData: ServiceDTO = {
         titre: this.serviceForm.value.titre,
@@ -59,7 +71,18 @@ export class AddServiceModalComponent implements OnInit {
         tarif: Number(this.serviceForm.value.tarif),
         servicePicture: this.selectedFile,
       };
-      this.save.emit(serviceData);
+
+      try {
+        await this.save.emit(serviceData);
+
+        // Add a delay before reloading the page
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        // Reload the page
+        window.location.reload();
+      } catch (error) {
+        console.error("Error saving service:", error);
+      }
     }
   }
 }

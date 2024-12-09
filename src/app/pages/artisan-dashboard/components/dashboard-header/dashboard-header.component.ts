@@ -53,9 +53,8 @@ import { ArtisanService } from "../../../../components/services/auth.artisanServ
 })
 export class DashboardHeaderComponent implements OnInit {
   currentUser: DecodedToken | null = null;
-  profileImageUrl: string = "";
-  defaultProfileImage: string =
-    "../../../../../assets/images/default_image.jpg";
+  profileImageUrl: string = "/default-profile.jpg";
+  defaultProfileImage: string = "/default-profile.jpg";
 
   constructor(
     private authService: AuthService,
@@ -69,10 +68,26 @@ export class DashboardHeaderComponent implements OnInit {
     }
   }
 
+  // loadProfilePicture(id: number) {
+  //   this.artisanService.getProfilePicture(id).subscribe({
+  //     next: (blob) => {
+  //       this.profileImageUrl = URL.createObjectURL(blob);
+  //     },
+  //     error: () => {
+  //       this.profileImageUrl = this.defaultProfileImage;
+  //     },
+  //   });
+  // }
+
   loadProfilePicture(id: number) {
     this.artisanService.getProfilePicture(id).subscribe({
-      next: (blob) => {
-        this.profileImageUrl = URL.createObjectURL(blob);
+      next: (result) => {
+        if (result instanceof Blob) {
+          this.profileImageUrl = URL.createObjectURL(result);
+        } else {
+          // If it's a string (default image path)
+          this.profileImageUrl = result;
+        }
       },
       error: () => {
         this.profileImageUrl = this.defaultProfileImage;
@@ -82,5 +97,12 @@ export class DashboardHeaderComponent implements OnInit {
 
   onImageError() {
     this.profileImageUrl = this.defaultProfileImage;
+  }
+
+  // Clean up object URLs when component is destroyed
+  ngOnDestroy() {
+    if (this.profileImageUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(this.profileImageUrl);
+    }
   }
 }
