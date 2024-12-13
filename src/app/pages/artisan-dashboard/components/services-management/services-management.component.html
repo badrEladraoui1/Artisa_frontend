@@ -1,0 +1,51 @@
+<div class="bg-white rounded-lg shadow p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-xl font-bold text-dark-blue">Services Management</h2>
+    <button (click)="showAddServiceModal = true" class="btn btn-primary">
+      Add New Service
+    </button>
+  </div>
+
+  <!-- Show services grid if there are services -->
+  <div
+    *ngIf="services.length > 0"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+  >
+    <app-service-card
+      *ngFor="let service of services"
+      [service]="service"
+      (edit)="onEditService($event)"
+      (delete)="onDeleteService($event)"
+    >
+    </app-service-card>
+  </div>
+
+  <!-- Show message if no services -->
+  <div
+    *ngIf="services.length === 0"
+    class="flex justify-center items-center h-48"
+  >
+    <p class="text-2xl font-bold text-gray-800 text-center">
+      No services available. Click "Add New Service" to get started!
+    </p>
+  </div>
+
+  <!-- <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <app-service-card
+      *ngFor="let service of services"
+      [service]="service"
+      (edit)="onEditService($event)"
+      (delete)="onDeleteService($event)"
+    >
+    </app-service-card>
+  </div> -->
+
+  <app-add-service-modal
+    *ngIf="showAddServiceModal || showEditModal"
+    [editMode]="showEditModal"
+    [service]="selectedService"
+    (close)="closeModal()"
+    (save)="onSaveService($event)"
+  >
+  </app-add-service-modal>
+</div>

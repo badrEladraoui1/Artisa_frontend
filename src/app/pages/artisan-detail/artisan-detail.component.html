@@ -1,4 +1,82 @@
-<app-artisan-hero
+<div *ngIf="artisan" class="container mx-auto px-4 py-8">
+  <!-- Artisan Header -->
+  <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+    <div class="flex items-center gap-6">
+      <img
+        [src]="
+          artisan.profilePictureFileName
+            ? 'http://localhost:8080/api/images/profile-pictures/' +
+              artisan.profilePictureFileName
+            : '/assets/default-profile.jpg'
+        "
+        [alt]="artisan.nomComplet"
+        class="w-24 h-24 rounded-full object-cover"
+      />
+      <div>
+        <h1 class="text-3xl font-bold text-dark-blue">
+          {{ artisan.nomComplet }}
+        </h1>
+        <p class="text-gray-600">{{ artisan.metier }}</p>
+        <p class="text-gray-600">{{ artisan.email }} | {{ artisan.phone }}</p>
+        <p class="text-gray-600">{{ artisan.adresse }}</p>
+      </div>
+    </div>
+    <p class="mt-4 text-gray-700">{{ artisan.description }}</p>
+  </div>
+
+  <!-- Services Section -->
+  <h2 class="text-2xl font-bold text-dark-blue mb-6">Services Offered</h2>
+
+  <!-- No Services Message -->
+  <div
+    *ngIf="!artisan.services?.length"
+    class="bg-white rounded-lg shadow-lg p-8 text-center"
+  >
+    <p class="text-xl font-semibold text-gray-700">
+      This artisan hasn't added any services yet.
+    </p>
+  </div>
+
+  <!-- Services Grid -->
+  <div
+    *ngIf="artisan.services?.length"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+  >
+    <div
+      *ngFor="let service of artisan.services"
+      class="bg-white rounded-lg shadow-lg overflow-hidden"
+    >
+      <img
+        *ngIf="service.servicePictureFileName"
+        [src]="
+          'http://localhost:8080/api/images/service-pictures/' +
+          service.servicePictureFileName
+        "
+        [alt]="service.titre"
+        class="w-full h-48 object-cover"
+      />
+      <div class="p-6">
+        <h3 class="text-xl font-semibold text-dark-blue mb-2">
+          {{ service.titre }}
+        </h3>
+        <p class="text-gray-600 mb-4">{{ service.description }}</p>
+        <div class="flex justify-between items-center">
+          <span class="text-lg font-bold text-bright-blue"
+            >${{ service.tarif }}</span
+          >
+          <button
+            (click)="onInterested(service)"
+            class="bg-bright-blue text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+          >
+            I'm Interested
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <app-artisan-hero
   *ngIf="artisan"
   [image]="artisan.image"
   [name]="artisan.name"
@@ -32,4 +110,4 @@
       </app-custom-service-form>
     </div>
   </div>
-</section>
+</section> -->

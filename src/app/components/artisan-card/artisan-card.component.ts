@@ -1,45 +1,14 @@
 import { Component, Input } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
-import { Artisan } from "../../models/artisan.model";
+import { ArtisanDisplay } from "../../models/artisan.model";
 
 @Component({
   selector: "app-artisan-card",
   standalone: true,
   imports: [CommonModule, RouterModule],
-  // template: `
-  //   <a [routerLink]="['/artisan', artisan.id]"
-  //      class="bg-white rounded-xl overflow-hidden shadow-md hover:-translate-y-1 transition-transform duration-300">
-  //     <img [src]="artisan.image"
-  //          [alt]="artisan.name"
-  //          class="w-full h-48 object-cover">
-  //     <div class="p-6">
-  //       <h3 class="text-xl font-semibold text-dark-blue">{{artisan.name}}</h3>
-  //       <div class="text-yellow my-2">{{artisan.rating}}</div>
-  //       <div class="text-gray-600 text-sm space-y-1">
-  //         <p>📍 {{artisan.location}}</p>
-  //         <p>📞 {{artisan.phone}}</p>
-  //       </div>
-  //       <p class="mt-3 text-gray-700">{{artisan.description}}</p>
-
-  //       <div class="mt-4 space-y-2">
-  //         <div *ngFor="let service of artisan.services"
-  //              class="text-sm text-gray-600">
-  //           <span class="font-semibold">{{service.name}}</span> - {{service.price}}
-  //         </div>
-  //       </div>
-
-  //       <div class="flex flex-wrap gap-2 mt-4">
-  //         <span *ngFor="let tag of artisan.tags"
-  //               class="bg-light-blue text-dark-blue px-3 py-1 rounded-full text-sm">
-  //           {{tag}}
-  //         </span>
-  //       </div>
-  //     </div>
-  //   </a>
-  // `
   templateUrl: "./artisan-card.component.html",
 })
 export class ArtisanCardComponent {
-  @Input() artisan!: Artisan;
+  @Input() artisan!: ArtisanDisplay;
 }

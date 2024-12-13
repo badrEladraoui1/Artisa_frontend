@@ -1,109 +1,82 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
+import { ArtisanService } from "../../../../components/services/auth.artisanService";
+import { AuthService } from "../../../../components/services/auth.service";
 
 @Component({
-  selector: 'app-profile-settings',
+  selector: "app-profile-settings",
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  template: `
-    <div class="bg-white rounded-lg shadow p-6">
-      <h2 class="text-xl font-bold text-dark-blue mb-6">Profile Settings</h2>
-
-      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Full Name</label>
-            <input 
-              type="text" 
-              formControlName="name"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-bright-blue focus:ring-bright-blue">
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Email</label>
-            <input 
-              type="email" 
-              formControlName="email"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-bright-blue focus:ring-bright-blue">
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Phone</label>
-            <input 
-              type="tel" 
-              formControlName="phone"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-bright-blue focus:ring-bright-blue">
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Profile Picture URL</label>
-            <input 
-              type="text" 
-              formControlName="profilePicture"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-bright-blue focus:ring-bright-blue">
-          </div>
-
-          <div class="md:col-span-2">
-            <label class="block text-sm font-medium text-gray-700">Bio</label>
-            <textarea 
-              formControlName="bio"
-              rows="4"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-bright-blue focus:ring-bright-blue"></textarea>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700">New Password</label>
-            <input 
-              type="password" 
-              formControlName="newPassword"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-bright-blue focus:ring-bright-blue">
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Confirm New Password</label>
-            <input 
-              type="password" 
-              formControlName="confirmPassword"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-bright-blue focus:ring-bright-blue">
-          </div>
-        </div>
-
-        <div class="flex justify-end">
-          <button 
-            type="submit"
-            [disabled]="!profileForm.valid"
-            class="btn btn-primary">
-            Save Changes
-          </button>
-        </div>
-      </form>
-    </div>
-  `
+  templateUrl: "./profile-settings.component.html",
 })
-export class ProfileSettingsComponent {
+export class ProfileSettingsComponent implements OnInit {
   profileForm: FormGroup;
+  successMessage: string = "";
+  errorMessage: string = "";
+  isLoading: boolean = false;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private artisanService: ArtisanService
+  ) {
     this.profileForm = this.fb.group({
-      name: ['David Miller', Validators.required],
-      email: ['david.miller@artisa.com', [Validators.required, Validators.email]],
-      phone: ['(555) 123-4567', Validators.required],
-      profilePicture: ['https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=500&q=80'],
-      bio: ['Master woodworker specializing in custom furniture and architectural elements.', Validators.required],
-      newPassword: [''],
-      confirmPassword: ['']
-    }, { validator: this.passwordMatchValidator });
+      name: ["", Validators.required],
+      email: ["", [Validators.required, Validators.email]],
+      phone: ["", Validators.required],
+      address: ["", Validators.required], // Added address field
+    });
   }
 
-  passwordMatchValidator(g: FormGroup) {
-    return g.get('newPassword')?.value === g.get('confirmPassword')?.value
-      ? null : { mismatch: true };
+  ngOnInit() {
+    const currentUser = this.authService.currentUserValue;
+    if (currentUser) {
+      this.profileForm.patchValue({
+        name: currentUser.nomComplet,
+        email: currentUser.email,
+        phone: currentUser.phone,
+        address: currentUser.adresse, // Added address
+      });
+    }
   }
 
   onSubmit() {
     if (this.profileForm.valid) {
-      console.log('Save profile:', this.profileForm.value);
+      this.isLoading = true;
+      this.successMessage = "";
+      this.errorMessage = "";
+
+      const currentUser = this.authService.currentUserValue;
+      if (!currentUser?.id) {
+        this.errorMessage = "User information not found";
+        this.isLoading = false;
+        return;
+      }
+
+      const profileData = {
+        nomComplet: this.profileForm.get("name")?.value,
+        email: this.profileForm.get("email")?.value,
+        phone: this.profileForm.get("phone")?.value,
+        address: this.profileForm.get("address")?.value, // Using form value now
+      };
+
+      this.artisanService.updateProfile(currentUser.id, profileData).subscribe({
+        next: () => {
+          this.successMessage = "Profile updated successfully!";
+          this.isLoading = false;
+        },
+        error: (error: any) => {
+          this.errorMessage =
+            error.error?.message || "Failed to update profile";
+          this.isLoading = false;
+        },
+      });
     }
   }
 }
