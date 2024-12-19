@@ -1,0 +1,77 @@
+<!-- purchases.component.html -->
+<div class="bg-white rounded-lg shadow p-6">
+  <h2 class="text-xl font-bold text-dark-blue mb-6">My Service Requests</h2>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+    <div class="animate-spin text-bright-blue">⌛</div>
+  </div>
+
+  <!-- No Services Message -->
+  <div
+    *ngIf="!isLoading && (!reservations || reservations.length === 0)"
+    class="flex flex-col items-center justify-center py-12 text-gray-600"
+  >
+    <p class="text-lg">You haven't requested any services yet.</p>
+    <a routerLink="/browse" class="mt-4 text-bright-blue hover:text-orange">
+      Browse Available Services
+    </a>
+  </div>
+
+  <!-- Services Grid -->
+  <div
+    *ngIf="!isLoading && reservations && reservations.length > 0"
+    class="grid grid-cols-1 md:grid-cols-2 gap-6"
+  >
+    <div
+      *ngFor="let reservation of reservations"
+      class="bg-gray-50 rounded-lg p-4"
+    >
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-lg font-semibold text-dark-blue">
+            {{ reservation.serviceName }}
+          </h3>
+          <p class="text-bright-blue font-medium">
+            {{ reservation.artisanName }}
+          </p>
+        </div>
+        <span
+          class="px-2 py-1 text-sm rounded-full"
+          [ngClass]="{
+            'bg-green-500 text-white': reservation.status === 'COMPLETED',
+            'bg-yellow text-dark-blue': reservation.status === 'IN_PROGRESS',
+            'bg-orange text-white': reservation.status === 'PENDING',
+            'bg-red-500 text-white': reservation.status === 'CANCELED'
+          }"
+        >
+          {{ reservation.status | titlecase }}
+        </span>
+      </div>
+
+      <div class="mt-4 space-y-2 text-sm text-gray-600">
+        <p>📅 {{ reservation.dateCreation | date : "medium" }}</p>
+        <p>💰 ${{ reservation.servicePrice }}</p>
+        <p *ngIf="reservation.notes" class="text-gray-700">
+          {{ reservation.notes }}
+        </p>
+      </div>
+
+      <div class="flex justify-end gap-2 mt-4">
+        <button
+          *ngIf="reservation.status === 'PENDING'"
+          (click)="cancelReservation(reservation.id)"
+          class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+        >
+          Cancel Request
+        </button>
+        <button
+          *ngIf="reservation.status === 'COMPLETED'"
+          class="px-4 py-2 bg-orange text-white rounded-lg hover:bg-yellow transition"
+        >
+          Leave Review
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

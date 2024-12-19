@@ -1,0 +1,75 @@
+<div class="container mx-auto px-4 py-8">
+  <!-- Add at the start of your content -->
+  <div
+    *ngIf="!artisan || !service"
+    class="flex justify-center items-center py-12"
+  >
+    <div class="animate-spin text-2xl">⌛</div>
+  </div>
+  <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-md p-8">
+    <h2 class="text-2xl font-bold text-dark-blue mb-6">
+      Confirm Service Request
+    </h2>
+
+    <div *ngIf="artisan && service" class="space-y-6">
+      <!-- Artisan Section with Image -->
+      <div class="border-b pb-4">
+        <h3 class="text-lg font-semibold mb-4">Artisan</h3>
+        <div class="flex items-center gap-4">
+          <img
+            [src]="artisan.profilePictureFileName ? 
+              'http://localhost:8080/api/images/profile-pictures/' + artisan.profilePictureFileName : 
+              '/assets/default-profile.jpg'"
+            [alt]="artisan.nomComplet"
+            class="w-16 h-16 rounded-full object-cover border-2 border-bright-blue"
+          />
+          <div>
+            <p class="text-gray-600 font-semibold">{{ artisan.nomComplet }}</p>
+            <p class="text-gray-600">{{ artisan.metier }}</p>
+            <p class="text-gray-600">{{ artisan.email }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Service Section with Image -->
+      <div class="border-b pb-4">
+        <h3 class="text-lg font-semibold mb-4">Service Details</h3>
+        <div class="space-y-4">
+          <!-- Service Image -->
+          <img
+            *ngIf="service.servicePictureFileName"
+            [src]="'http://localhost:8080/api/images/service-pictures/' + service.servicePictureFileName"
+            [alt]="service.titre"
+            class="w-full h-48 object-cover rounded-lg"
+          />
+          <div>
+            <p class="text-gray-600 font-semibold">{{ service.titre }}</p>
+            <p class="text-gray-600">{{ service.description }}</p>
+            <p class="text-bright-blue font-bold text-xl mt-2">
+              ${{ service.tarif }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex justify-end space-x-4">
+        <button
+          (click)="onCancel()"
+          [disabled]="isSubmitting"
+          class="px-4 py-2 text-gray-600 hover:text-gray-800 disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="onConfirm()"
+          [disabled]="isSubmitting"
+          class="px-4 py-2 bg-bright-blue text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
+        >
+          <span *ngIf="isSubmitting" class="animate-spin">⌛</span>
+          {{ isSubmitting ? 'Submitting...' : 'Confirm Request' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

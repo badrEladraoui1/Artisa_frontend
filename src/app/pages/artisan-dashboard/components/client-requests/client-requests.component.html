@@ -1,15 +1,41 @@
 <div class="bg-white rounded-lg shadow p-6">
   <h2 class="text-xl font-bold text-dark-blue mb-6">Client Requests</h2>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    @for (request of requests; track request.id){
+  <!-- Debug Info -->
+  <!-- <div class="mb-4 p-4 bg-gray-100 rounded">
+    <p>Loading State: {{ isLoading }}</p>
+    <p>Number of Requests: {{ requests.length || 0 }}</p>
+    <details>
+      <summary>Raw Request Data</summary>
+      <pre class="text-xs mt-2">{{ requests | json }}</pre>
+    </details>
+  </div> -->
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+    <div class="animate-spin text-bright-blue">⌛</div>
+  </div>
+
+  <!-- No Requests Message -->
+  <div
+    *ngIf="!isLoading && (!requests || requests.length === 0)"
+    class="flex flex-col items-center justify-center py-12 text-gray-600"
+  >
+    <p class="text-lg">No client requests yet.</p>
+  </div>
+
+  <!-- Requests Grid -->
+  <div
+    *ngIf="!isLoading && requests && requests.length > 0"
+    class="grid grid-cols-1 md:grid-cols-2 gap-6"
+  >
     <app-request-card
+      *ngFor="let request of requests"
       [request]="request"
       (accept)="onAcceptRequest($event)"
       (decline)="onDeclineRequest($event)"
       (moreInfo)="onRequestMoreInfo($event)"
     >
     </app-request-card>
-    }
   </div>
 </div>
