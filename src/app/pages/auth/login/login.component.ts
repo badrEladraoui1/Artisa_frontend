@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { AuthService } from "../../../components/services/auth.service";
-import { Router, RouterModule } from "@angular/router";
+import { ActivatedRoute, Router, RouterModule } from "@angular/router";
 import {
   FormBuilder,
   FormGroup,
@@ -23,12 +23,19 @@ export class LoginComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
 
   constructor() {
     this.loginForm = this.fb.group({
       nomComplet: ["", [Validators.required]],
       motDePasse: ["", [Validators.required, Validators.minLength(8)]],
     });
+  }
+
+  onLoginSuccess() {
+    // Get return URL from query params or default to home
+    const returnUrl = this.route.snapshot.queryParams["returnUrl"] || "/";
+    this.router.navigateByUrl(returnUrl);
   }
 
   ngOnInit() {

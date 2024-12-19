@@ -1,7 +1,7 @@
 <nav class="bg-white fixed w-full top-0 z-50 shadow-sm">
   <div class="max-w-7xl mx-auto px-4">
     <div class="flex justify-between items-center h-16">
-      <a routerLink="/" class="text-2xl font-bold text-dark-blue"> Artisa </a>
+      <a routerLink="/" class="text-2xl font-bold text-dark-blue">Artisa</a>
 
       <button
         (click)="toggleMenu()"
@@ -47,14 +47,7 @@
           >
             Contact
           </a>
-          <!-- <a
-            routerLink="/login"
-            routerLinkActive="bg-yellow"
-            class="mt-2 lg:mt-0 px-4 py-2 bg-orange text-white rounded-lg hover:bg-yellow transition-colors text-center"
-          >
-            Login
-          </a> -->
-          <!-- Conditional Login/Logout Button -->
+
           <ng-container *ngIf="!isLoggedIn; else logoutButton">
             <a
               routerLink="/login"
@@ -66,10 +59,8 @@
           </ng-container>
 
           <ng-template #logoutButton>
-            <!-- artisan/dashboard/page -->
-
             <a
-              routerLink="/artisan/dashboard/page"
+              [routerLink]="getDashboardRoute()"
               routerLinkActive="text-orange"
               class="py-2 lg:py-0 text-dark-blue hover:text-bright-blue transition-colors"
             >

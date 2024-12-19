@@ -135,6 +135,57 @@
           </div>
         </div>
 
+        <!-- Profile Picture Section -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700"
+            >Profile Picture (Optional)</label
+          >
+          <div class="mt-1 flex items-center space-x-4">
+            <!-- Profile Picture Preview -->
+            <div *ngIf="previewUrl" class="relative w-24 h-24">
+              <img
+                [src]="previewUrl"
+                class="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
+                alt="Profile preview"
+              />
+              <button
+                type="button"
+                (click)="removeFile()"
+                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 focus:outline-none"
+              >
+                ×
+              </button>
+            </div>
+
+            <!-- Upload Button -->
+            <div class="flex-1">
+              <input
+                type="file"
+                (change)="onFileSelected($event)"
+                accept="image/png,image/jpeg"
+                class="hidden"
+                #fileInput
+              />
+              <button
+                type="button"
+                (click)="fileInput.click()"
+                class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-bright-blue"
+              >
+                {{ selectedFile ? "Change Photo" : "Upload Photo" }}
+              </button>
+
+              <p class="mt-1 text-sm text-gray-500">
+                Optional: PNG or JPEG up to 5MB
+              </p>
+            </div>
+          </div>
+
+          <!-- File name display -->
+          <div *ngIf="selectedFile" class="mt-2 text-sm text-gray-500">
+            Selected: {{ selectedFile.name }}
+          </div>
+        </div>
+
         <div class="flex items-center">
           <input
             type="checkbox"

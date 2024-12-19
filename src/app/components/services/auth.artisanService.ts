@@ -45,11 +45,8 @@ export class ArtisanService {
         responseType: "blob",
       })
       .pipe(
-        catchError((error: HttpErrorResponse) => {
-          if (error.status === 404) {
-            return of("/default-profile.jpg");
-          }
-          throw error;
+        catchError(() => {
+          return of("/default-profile.jpg");
         })
       );
   }

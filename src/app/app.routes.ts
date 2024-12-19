@@ -21,6 +21,9 @@ import { ProfileComponent as ClientProfileComponent } from "./pages/client-dashb
 import { ClientDashboardComponent } from "./pages/client-dashboard/client-dashboard.component";
 import { PurchasesComponent } from "./pages/client-dashboard/pages/purchases/purchases.component";
 import { RequestsComponent } from "./pages/artisan-dashboard/pages/requests/requests.component";
+import { ServiceConfirmationComponent } from "./components/service-confirmation/service-confirmation-component";
+import { ClientRequestsComponent } from "./pages/artisan-dashboard/components/client-requests/client-requests.component";
+import { PurchasesUpdateComponent } from "./pages/client-dashboard/pages/purchases-updates/purchases-updates.component";
 
 export const routes: Routes = [
   {
@@ -70,7 +73,7 @@ export const routes: Routes = [
       },
       {
         path: "requests",
-        component: RequestCardComponent,
+        component: ClientRequestsComponent,
       },
       {
         path: "profile",
@@ -92,14 +95,18 @@ export const routes: Routes = [
         component: PurchasesComponent,
       },
       {
-        path: "requests",
-        component: RequestsComponent,
+        path: "updates",
+        component: PurchasesUpdateComponent,
       },
       {
         path: "profile",
         component: ClientProfileComponent,
       },
     ],
+  },
+  {
+    path: "service-confirmation",
+    component: ServiceConfirmationComponent,
   },
   {
     path: "**",

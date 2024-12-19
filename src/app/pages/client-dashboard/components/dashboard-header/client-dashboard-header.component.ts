@@ -1,36 +1,72 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { AuthService } from "../../../../components/services/auth.service";
+import { DecodedToken } from "../../../../components/models/auth.models";
+import { ClientService } from "../../../../components/services/auth.clientService";
 @Component({
-  selector: 'app-client-dashboard-header',
+  selector: "app-client-dashboard-header",
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="bg-white shadow">
-      <div class="container mx-auto px-4 py-6">
-        <div class="flex flex-col md:flex-row justify-between items-center">
-          <div>
-            <h1 class="text-2xl font-bold text-dark-blue">Welcome back, Sarah!</h1>
-            <p class="text-gray-600">Track your services and requests</p>
-          </div>
-          
-          <div class="grid grid-cols-3 gap-6 mt-4 md:mt-0">
-            <div class="text-center">
-              <div class="text-2xl font-bold text-bright-blue">5</div>
-              <div class="text-sm text-gray-600">Active Services</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-orange">3</div>
-              <div class="text-sm text-gray-600">Pending Requests</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-yellow">8</div>
-              <div class="text-sm text-gray-600">Completed Projects</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `
+  templateUrl: "./client-dashboard-header.component.html",
 })
-export class ClientDashboardHeaderComponent {}
+export class ClientDashboardHeaderComponent implements OnInit {
+  currentUser: DecodedToken | null = null;
+  profileImageUrl: string = "/default-profile.jpg";
+  defaultProfileImage: string = "/default-profile.jpg";
+
+  constructor(
+    private authService: AuthService,
+    private clientService: ClientService
+  ) {}
+
+  ngOnInit() {
+    this.currentUser = this.authService.currentUserValue;
+    if (this.currentUser?.id) {
+      this.loadProfilePicture(this.currentUser.id);
+    }
+  }
+
+  loadProfilePicture(id: number) {
+    console.log("Loading profile picture for client ID:", id);
+    this.clientService.getProfilePicture(id).subscribe({
+      next: (result) => {
+        console.log("Profile picture result:", result);
+        if (result instanceof Blob) {
+          this.profileImageUrl = URL.createObjectURL(result);
+        } else {
+          this.profileImageUrl = result;
+        }
+      },
+      error: (error) => {
+        console.error("Error loading profile picture:", error);
+        this.profileImageUrl = this.defaultProfileImage;
+      },
+    });
+  }
+
+  // loadProfilePicture(id: number) {
+  //   this.clientService.getProfilePicture(id).subscribe({
+  //     next: (result) => {
+  //       if (result instanceof Blob) {
+  //         this.profileImageUrl = URL.createObjectURL(result);
+  //       } else {
+  //         // If it's a string (default image path)
+  //         this.profileImageUrl = result;
+  //       }
+  //     },
+  //     error: () => {
+  //       this.profileImageUrl = this.defaultProfileImage;
+  //     },
+  //   });
+  // }
+
+  onImageError() {
+    this.profileImageUrl = this.defaultProfileImage;
+  }
+
+  ngOnDestroy() {
+    if (this.profileImageUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(this.profileImageUrl);
+    }
+  }
+}

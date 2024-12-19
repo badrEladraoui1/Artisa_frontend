@@ -1,47 +1,50 @@
-<div class="bg-gray-50 rounded-lg p-4">
+<div class="bg-white rounded-lg shadow p-6">
   <div class="flex justify-between items-start">
     <div>
-      <h3 class="text-lg font-semibold text-dark-blue">
+      <h3 class="text-xl font-semibold text-gray-800">
         {{ request?.clientName }}
       </h3>
-      <p class="text-bright-blue font-medium">{{ request?.service }}</p>
+      <p class="text-bright-blue font-medium">{{ request?.serviceName }}</p>
     </div>
     <span
-      class="px-2 py-1 text-sm rounded-full"
+      class="px-3 py-1 rounded-full text-sm font-medium"
       [ngClass]="{
-        'bg-yellow text-dark-blue': request?.status === 'pending',
-        'bg-green-500 text-white': request?.status === 'accepted',
-        'bg-red-500 text-white': request?.status === 'declined'
+        'bg-green-500 text-white': request?.status === 'COMPLETED',
+        'bg-yellow text-dark-blue': request?.status === 'PENDING',
+        'bg-blue-500 text-white': request?.status === 'IN_PROGRESS',
+        'bg-red-500 text-white': request?.status === 'CANCELED'
       }"
     >
-      {{ request?.status | titlecase }}
+      {{ request?.status }}
     </span>
   </div>
 
   <div class="mt-4 space-y-2 text-sm text-gray-600">
-    <p>📅 {{ request?.date }} at {{ request?.time }}</p>
-    <p>📍 {{ request?.location }}</p>
-    <p class="text-gray-700">{{ request?.description }}</p>
+    <p class="flex items-center gap-2">
+      <span>📅</span> {{ request?.dateCreation | date : "medium" }}
+    </p>
+    <p class="flex items-center gap-2">
+      <span>💰</span> ${{ request?.servicePrice }}
+    </p>
+    <p class="mt-2 text-gray-700" *ngIf="request?.notes">
+      {{ request?.notes }}
+    </p>
   </div>
 
-  <div class="flex justify-end gap-2 mt-4">
+  <div class="mt-6 flex justify-end gap-4">
     <button
+      *ngIf="request?.status === 'PENDING'"
       (click)="accept.emit(request?.id)"
-      class="btn bg-green-500 text-white hover:bg-green-600"
+      class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
     >
       Accept
     </button>
     <button
+      *ngIf="request?.status === 'PENDING'"
       (click)="decline.emit(request?.id)"
-      class="btn bg-red-500 text-white hover:bg-red-600"
+      class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
     >
       Decline
-    </button>
-    <button
-      (click)="moreInfo.emit(request?.id)"
-      class="btn bg-bright-blue text-white hover:bg-light-blue"
-    >
-      More Info
     </button>
   </div>
 </div>

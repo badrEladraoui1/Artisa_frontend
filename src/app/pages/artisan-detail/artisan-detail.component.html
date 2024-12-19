@@ -60,6 +60,7 @@
           {{ service.titre }}
         </h3>
         <p class="text-gray-600 mb-4">{{ service.description }}</p>
+        <!-- Inside your services grid -->
         <div class="flex justify-between items-center">
           <span class="text-lg font-bold text-bright-blue"
             >${{ service.tarif }}</span
@@ -71,43 +72,18 @@
             I'm Interested
           </button>
         </div>
+        <!-- <div class="flex justify-between items-center">
+          <span class="text-lg font-bold text-bright-blue"
+            >${{ service.tarif }}</span
+          >
+          <button
+            (click)="onInterested(service)"
+            class="bg-bright-blue text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+          >
+            I'm Interested
+          </button>
+        </div> -->
       </div>
     </div>
   </div>
 </div>
-
-<!-- <app-artisan-hero
-  *ngIf="artisan"
-  [image]="artisan.image"
-  [name]="artisan.name"
-  [rating]="artisan.rating"
-  [description]="artisan.description"
-  [location]="artisan.location"
-  [phone]="artisan.phone"
-  [email]="artisan.email"
->
-</app-artisan-hero>
-
-<section class="py-12">
-  <div class="container mx-auto px-4">
-    <h2 class="text-2xl md:text-3xl font-bold text-dark-blue mb-8">
-      Services Offered
-    </h2>
-
-    <div class="space-y-8">
-      <app-service-card
-        *ngFor="let service of artisan?.services"
-        [name]="service.name"
-        [description]="service.description"
-        [price]="service.price"
-        [experience]="service.experience"
-        [images]="service.images"
-        (interest)="onServiceInterest(service)"
-      >
-      </app-service-card>
-
-      <app-custom-service-form (submitted)="onCustomServiceSubmit($event)">
-      </app-custom-service-form>
-    </div>
-  </div>
-</section> -->

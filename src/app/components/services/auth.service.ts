@@ -25,12 +25,31 @@ export class AuthService {
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
-  signupClient(data: any): Observable<any> {
-    // Use observe: 'response' to get the full HTTP response
+  // signupClient(data: any): Observable<any> {
+  //   // Use observe: 'response' to get the full HTTP response
+  //   return this.http
+  //     .post(`${this.apiUrl}/signup/client`, data, {
+  //       observe: "response",
+  //       responseType: "text", // Handle response as text instead of JSON
+  //     })
+  //     .pipe(
+  //       map((response: HttpResponse<any>) => {
+  //         if (response.status === 200) {
+  //           return {
+  //             success: true,
+  //             message: "Registration successful! You can now login.",
+  //           };
+  //         }
+  //         throw new Error("Registration failed");
+  //       })
+  //     );
+  // }
+
+  signupClient(formData: FormData): Observable<any> {
     return this.http
-      .post(`${this.apiUrl}/signup/client`, data, {
+      .post(`${this.apiUrl}/signup/client`, formData, {
         observe: "response",
-        responseType: "text", // Handle response as text instead of JSON
+        responseType: "text",
       })
       .pipe(
         map((response: HttpResponse<any>) => {
