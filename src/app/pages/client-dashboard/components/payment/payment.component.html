@@ -1,0 +1,148 @@
+<div class="fixed inset-0 bg-black/50 flex items-center justify-center">
+  <div class="bg-white rounded-lg max-w-2xl w-full mx-4 p-6">
+    <!-- Header -->
+    <div class="text-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-800">Payment Details</h2>
+      <p class="text-gray-600">Service: {{ reservation.serviceName }}</p>
+    </div>
+
+    <!-- Price Breakdown -->
+    <div class="bg-gray-50 p-4 rounded-lg mb-6">
+      <div class="flex justify-between mb-2">
+        <span>Service Price:</span>
+        <span class="font-semibold"
+          >${{ reservation.servicePrice?.toFixed(2) }}</span
+        >
+      </div>
+      <div class="flex justify-between mb-2 text-purple-600">
+        <span>Platform Fee (20%):</span>
+        <span class="font-semibold">${{ platformFee?.toFixed(2) }}</span>
+      </div>
+      <div class="flex justify-between text-green-600 font-medium">
+        <span>Amount to Pay Now:</span>
+        <span>${{ platformFee?.toFixed(2) }}</span>
+      </div>
+      <div class="mt-4 text-sm text-gray-500">
+        <p>
+          * The remaining ${{ remainingAmount?.toFixed(2) }} will be handled
+          directly between you and the artisan.
+        </p>
+      </div>
+    </div>
+
+    <!-- Payment Method Selection -->
+    <div class="mb-6">
+      <h3 class="font-semibold mb-4">Select Payment Method</h3>
+      <div class="space-y-3">
+        <label
+          class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
+        >
+          <input
+            type="radio"
+            name="paymentMethod"
+            value="card"
+            [(ngModel)]="selectedPaymentMethod"
+            class="mr-3"
+          />
+          <span class="flex items-center">💳 Credit/Debit Card</span>
+        </label>
+        <label
+          class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
+        >
+          <input
+            type="radio"
+            name="paymentMethod"
+            value="paypal"
+            [(ngModel)]="selectedPaymentMethod"
+            class="mr-3"
+          />
+          <span class="flex items-center">
+            <span class="text-[#00457C] font-bold">Pay</span
+            ><span class="text-[#0079C1] font-bold">Pal</span>
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Card Details Form -->
+    <div *ngIf="selectedPaymentMethod === 'card'" class="space-y-4 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Card Number
+        </label>
+        <input
+          type="text"
+          class="w-full px-3 py-2 border rounded-md"
+          placeholder="1234 5678 9012 3456"
+          (input)="formatCardNumber($event)"
+          [value]="cardNumber | cardFormat"
+          maxlength="19"
+        />
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Expiry Date
+          </label>
+          <input
+            type="text"
+            class="w-full px-3 py-2 border rounded-md"
+            placeholder="MM/YY"
+            (input)="formatExpiryDate($event)"
+            [(ngModel)]="expiryDate"
+            maxlength="5"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            CVV
+          </label>
+          <input
+            type="password"
+            class="w-full px-3 py-2 border rounded-md"
+            placeholder="123"
+            [(ngModel)]="cvv"
+            maxlength="3"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- PayPal Form -->
+    <div *ngIf="selectedPaymentMethod === 'paypal'" class="space-y-4 mb-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          PayPal Email
+        </label>
+        <input
+          type="email"
+          class="w-full px-3 py-2 border rounded-md"
+          placeholder="your@email.com"
+          [(ngModel)]="paypalEmail"
+        />
+      </div>
+      <p class="text-sm text-gray-500 mt-2">
+        You will receive a confirmation email to complete the payment.
+      </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-end gap-4">
+      <button
+        (click)="onCancel()"
+        class="px-4 py-2 text-gray-600 hover:text-gray-800"
+        [disabled]="isProcessing"
+      >
+        Cancel
+      </button>
+      <button
+        (click)="onProceed()"
+        [disabled]="!isValidPayment() || isProcessing"
+        class="px-6 py-2 bg-bright-blue text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
+      >
+        <span *ngIf="isProcessing" class="animate-spin">⌛</span>
+        {{ isProcessing ? "Processing..." : "Pay $" + platformFee?.toFixed(2) }}
+      </button>
+    </div>
+  </div>
+</div>

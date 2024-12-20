@@ -2,9 +2,12 @@ import { Injectable } from "@angular/core";
 import {
   CreateReservationDto,
   ReservationResponseDto,
+  ReservationStatus,
+  UpdateReservationStatusDto,
 } from "../../models/reservation.model";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { catchError, Observable, tap, throwError } from "rxjs";
+import { toISOStringOrUndefined } from "../../utils/date.utils";
 
 @Injectable({
   providedIn: "root",
@@ -19,12 +22,45 @@ export class ReservationService {
     return new HttpHeaders().set("Authorization", `Bearer ${token}`);
   }
 
+  // createReservation(
+  //   data: CreateReservationDto
+  // ): Observable<ReservationResponseDto> {
+  //   return this.http.post<ReservationResponseDto>(this.apiUrl, data, {
+  //     headers: this.getHeaders(),
+  //   });
+  // }
+
   createReservation(
     data: CreateReservationDto
   ): Observable<ReservationResponseDto> {
-    return this.http.post<ReservationResponseDto>(this.apiUrl, data, {
-      headers: this.getHeaders(),
-    });
+    // Safely convert the date to ISO string
+
+    const formattedData = {
+      ...data,
+      proposedCompletionDate: toISOStringOrUndefined(
+        data.proposedCompletionDate
+      ),
+    };
+
+    // const formattedData = {
+    //   ...data,
+    //   proposedCompletionDate:
+    //     data.proposedCompletionDate instanceof Date
+    //       ? data.proposedCompletionDate.toISOString()
+    //       : new Date(data.proposedCompletionDate).toISOString(),
+    // };
+
+    return this.http
+      .post<ReservationResponseDto>(this.apiUrl, formattedData, {
+        headers: this.getHeaders(),
+      })
+      .pipe(
+        tap((response) => console.log("Reservation created:", response)),
+        catchError((error) => {
+          console.error("Error creating reservation:", error);
+          return throwError(() => error);
+        })
+      );
   }
 
   getClientReservations(
@@ -58,7 +94,17 @@ export class ReservationService {
     status: string
   ): Observable<ReservationResponseDto[]> {
     return this.http.get<ReservationResponseDto[]>(
-      `${this.apiUrl}/status?userId=${userId}&status=${status}`
+      `${this.apiUrl}/status?userId=${userId}&status=${status}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  getClientSuggestedByArtisandReservations(
+    clientId: number
+  ): Observable<ReservationResponseDto[]> {
+    return this.http.get<ReservationResponseDto[]>(
+      `${this.apiUrl}/client/${clientId}/suggested_by_artisan`,
+      { headers: this.getHeaders() }
     );
   }
 
@@ -80,16 +126,54 @@ export class ReservationService {
     );
   }
 
-  updateReservationStatus(
-    reservationId: number,
-    status: string,
-    notes?: string
-  ): Observable<ReservationResponseDto> {
-    return this.http.put<ReservationResponseDto>(
-      `${this.apiUrl}/${reservationId}/status`,
-      { status, notes },
+  getClientAcceptedReservations(
+    clientId: number
+  ): Observable<ReservationResponseDto[]> {
+    return this.http.get<ReservationResponseDto[]>(
+      `${this.apiUrl}/client/${clientId}/accepted`,
       { headers: this.getHeaders() }
     );
+  }
+
+  // updateReservationStatus(
+  //   reservationId: number,
+  //   status: string,
+  //   notes?: string
+  // ): Observable<ReservationResponseDto> {
+  //   return this.http.put<ReservationResponseDto>(
+  //     `${this.apiUrl}/${reservationId}/status`,
+  //     { status, notes },
+  //     { headers: this.getHeaders() }
+  //   );
+  // }
+
+  updateReservationStatus(
+    reservationId: number,
+    status: ReservationStatus,
+    notes?: string,
+    proposedCompletionDate?: Date
+  ): Observable<ReservationResponseDto> {
+    const updateData: UpdateReservationStatusDto = {
+      status,
+      notes,
+      proposedCompletionDate: proposedCompletionDate
+        ? proposedCompletionDate.toISOString()
+        : undefined,
+    };
+
+    return this.http
+      .put<ReservationResponseDto>(
+        `${this.apiUrl}/${reservationId}/status`,
+        updateData,
+        { headers: this.getHeaders() }
+      )
+      .pipe(
+        tap((response) => console.log("Status updated:", response)),
+        catchError((error) => {
+          console.error("Error updating status:", error);
+          return throwError(() => error);
+        })
+      );
   }
 
   getReservationById(

@@ -50,12 +50,33 @@
       </div>
 
       <div class="mt-4 space-y-2 text-sm text-gray-600">
+        <!-- Add both dates -->
+        <p class="flex items-center gap-2">
+          <span>📅</span> Created:
+          {{ reservation.dateCreation | date : "medium" }}
+        </p>
+        <p class="flex items-center gap-2 text-green-600">
+          <span>🎯</span> Complete by:
+          {{ reservation.proposedCompletionDate | date : "medium" }}
+        </p>
+        <p class="flex items-center gap-2">
+          <span>💰</span> ${{ reservation.servicePrice }}
+        </p>
+
+        <!-- Notes section with better styling -->
+        <div class="mt-4 bg-white rounded-lg p-3" *ngIf="reservation.notes">
+          <p class="text-sm font-medium text-gray-700 mb-1">Notes:</p>
+          <p class="text-gray-600 italic">{{ reservation.notes }}</p>
+        </div>
+      </div>
+
+      <!-- <div class="mt-4 space-y-2 text-sm text-gray-600">
         <p>📅 {{ reservation.dateCreation | date : "medium" }}</p>
         <p>💰 ${{ reservation.servicePrice }}</p>
         <p *ngIf="reservation.notes" class="text-gray-700">
           {{ reservation.notes }}
         </p>
-      </div>
+      </div> -->
 
       <div class="flex justify-end gap-2 mt-4">
         <button

@@ -1,6 +1,13 @@
-<!-- purchases-update.component.html -->
+purchases-update.component.html
 <div class="bg-white rounded-lg shadow p-6">
   <h2 class="text-xl font-bold text-dark-blue mb-6">Service History</h2>
+
+  <!-- Add this after the loading state -->
+  <div *ngIf="!isLoading" class="mb-4 p-2 bg-gray-100 rounded text-xs">
+    <p>Completed: {{ completedReservations.length }}</p>
+    <p>Canceled: {{ canceledReservations.length }}</p>
+    <p>Suggested: {{ suggestedReservations.length }}</p>
+  </div>
 
   <!-- Loading State -->
   <div *ngIf="isLoading" class="flex justify-center items-center py-12">
@@ -20,6 +27,54 @@
     <a routerLink="/browse" class="mt-4 text-bright-blue hover:text-orange">
       Browse Available Services
     </a>
+  </div>
+
+  <!-- Accepted Services (Ready for Payment) -->
+  <div *ngIf="acceptedReservations.length > 0" class="mb-8">
+    <h3 class="text-lg font-semibold text-dark-blue mb-4">Ready for Payment</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div
+        *ngFor="let reservation of acceptedReservations"
+        class="bg-gray-50 rounded-lg p-4"
+      >
+        <!-- Reservation Details -->
+        <div class="flex justify-between items-start">
+          <div>
+            <h4 class="text-lg font-semibold text-dark-blue">
+              {{ reservation.serviceName }}
+            </h4>
+            <p class="text-bright-blue font-medium">
+              {{ reservation.artisanName }}
+            </p>
+          </div>
+          <span class="px-2 py-1 text-sm rounded-full bg-yellow-500 text-white">
+            Payment Required
+          </span>
+        </div>
+
+        <!-- Service Info -->
+        <div class="mt-4 space-y-2 text-sm text-gray-600">
+          <p>
+            📅 <span class="text-green-500 font-bold">Accepted on</span> :
+            {{ reservation.dateModification | date : "medium" }}
+          </p>
+          <p>
+            🎯 Service Date:
+            {{ reservation.proposedCompletionDate | date : "medium" }}
+          </p>
+          <p>💰 Total Price: ${{ reservation.servicePrice }}</p>
+          <!-- Payment Button -->
+          <div class="flex justify-end mt-4">
+            <button
+              (click)="onProceedToPayment(reservation)"
+              class="px-4 py-2 bg-bright-blue text-white rounded-lg hover:bg-blue-600"
+            >
+              Proceed to Payment
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Completed Services -->
@@ -46,17 +101,87 @@
           </span>
         </div>
         <div class="mt-4 space-y-2 text-sm text-gray-600">
-          <p>📅 {{ reservation.dateCreation | date : "medium" }}</p>
-          <p>💰 ${{ reservation.servicePrice }}</p>
-          <p *ngIf="reservation.notes" class="text-gray-700">
-            {{ reservation.notes }}
+          <p>📅 Created: {{ reservation.dateCreation | date : "medium" }}</p>
+          <p>
+            🎯 Completion Date:
+            {{ reservation.proposedCompletionDate | date : "medium" }}
           </p>
+          <p>💰 ${{ reservation.servicePrice }}</p>
+          <!-- Notes in a card-like format -->
+          <div
+            *ngIf="reservation.notes"
+            class="mt-3 bg-white rounded p-3 border border-gray-100"
+          >
+            <p class="font-medium text-gray-700 mb-1">Notes:</p>
+            <p class="text-gray-600">{{ reservation.notes }}</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Canceled Services -->
+  <!-- Add this section between Completed and Canceled Services -->
+  <!-- Suggested Services -->
+  <div *ngIf="suggestedReservations.length > 0" class="mb-8">
+    <h3 class="text-lg font-semibold text-dark-blue mb-4">
+      Suggested Date Changes
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div
+        *ngFor="let reservation of suggestedReservations"
+        class="bg-gray-50 rounded-lg p-4"
+      >
+        <div class="flex justify-between items-start">
+          <div>
+            <h4 class="text-lg font-semibold text-dark-blue">
+              {{ reservation.serviceName }}
+            </h4>
+            <p class="text-bright-blue font-medium">
+              {{ reservation.artisanName }}
+            </p>
+          </div>
+          <span class="px-2 py-1 text-sm rounded-full bg-purple-500 text-white">
+            Date Suggested
+          </span>
+        </div>
+
+        <div class="mt-4 space-y-2 text-sm text-gray-600">
+          <p>
+            📅 Original Request:
+            {{ reservation.dateCreation | date : "medium" }}
+          </p>
+          <p class="text-purple-600">
+            🎯 Suggested Date:
+            {{ reservation.proposedCompletionDate | date : "medium" }}
+          </p>
+          <p>💰 ${{ reservation.servicePrice }}</p>
+
+          <!-- Artisan's suggestion note -->
+          <div class="mt-3 bg-white rounded p-3 border border-purple-100">
+            <p class="font-medium text-gray-700 mb-1">Artisan's Message:</p>
+            <p class="text-gray-600">{{ reservation.notes }}</p>
+          </div>
+
+          <!-- Accept/Decline Buttons -->
+          <div class="flex justify-end gap-3 mt-4">
+            <button
+              (click)="onDeclineSuggestion(reservation.id)"
+              class="px-4 py-2 text-red-500 hover:text-red-600 font-medium"
+            >
+              Decline
+            </button>
+            <button
+              (click)="onAcceptSuggestion(reservation.id)"
+              class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+            >
+              Accept Date
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div *ngIf="canceledReservations.length > 0">
     <h3 class="text-lg font-semibold text-dark-blue mb-4">Canceled Services</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -78,11 +203,20 @@
           </span>
         </div>
         <div class="mt-4 space-y-2 text-sm text-gray-600">
-          <p>📅 {{ reservation.dateCreation | date : "medium" }}</p>
-          <p>💰 ${{ reservation.servicePrice }}</p>
-          <p *ngIf="reservation.notes" class="text-gray-700">
-            {{ reservation.notes }}
+          <p>📅 Created: {{ reservation.dateCreation | date : "medium" }}</p>
+          <p>
+            🎯 Planned for:
+            {{ reservation.proposedCompletionDate | date : "medium" }}
           </p>
+          <p>💰 ${{ reservation.servicePrice }}</p>
+
+          <div
+            *ngIf="reservation.notes"
+            class="mt-3 bg-white rounded p-3 border border-gray-100"
+          >
+            <p class="font-medium text-gray-700 mb-1">Notes:</p>
+            <p class="text-gray-600">{{ reservation.notes }}</p>
+          </div>
         </div>
       </div>
     </div>

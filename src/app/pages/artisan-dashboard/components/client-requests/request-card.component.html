@@ -12,14 +12,20 @@
         'bg-green-500 text-white': request?.status === 'COMPLETED',
         'bg-yellow text-dark-blue': request?.status === 'PENDING',
         'bg-blue-500 text-white': request?.status === 'IN_PROGRESS',
-        'bg-red-500 text-white': request?.status === 'CANCELED'
+        'bg-purple-500 text-white': request?.status === 'SUGGESTED_BY_ARTISAN',
+        'bg-red-500 text-white': request?.status === 'CANCELED',
+        'bg-orange text-white': request?.status === 'ACCEPTED'
       }"
     >
-      {{ request?.status }}
+      {{
+        request?.status === "SUGGESTED_BY_ARTISAN"
+          ? "Date Suggested"
+          : request?.status
+      }}
     </span>
   </div>
 
-  <div class="mt-4 space-y-2 text-sm text-gray-600">
+  <!-- <div class="mt-4 space-y-2 text-sm text-gray-600">
     <p class="flex items-center gap-2">
       <span>📅</span> {{ request?.dateCreation | date : "medium" }}
     </p>
@@ -29,6 +35,26 @@
     <p class="mt-2 text-gray-700" *ngIf="request?.notes">
       {{ request?.notes }}
     </p>
+  </div> -->
+
+  <div class="mt-4 space-y-2 text-sm text-gray-600">
+    <!-- Add Completion Date -->
+    <p class="flex items-center gap-2">
+      <span>📅</span> Created: {{ request?.dateCreation | date : "medium" }}
+    </p>
+    <p class="flex items-center gap-2 text-green-600">
+      <span>🎯</span> Complete by:
+      {{ request?.proposedCompletionDate | date : "medium" }}
+    </p>
+    <p class="flex items-center gap-2">
+      <span>💰</span> ${{ request?.servicePrice }}
+    </p>
+
+    <!-- Notes section with better styling -->
+    <div class="mt-4 bg-gray-50 rounded-lg p-3" *ngIf="request?.notes">
+      <p class="text-sm font-medium text-gray-700 mb-1">Client Notes:</p>
+      <p class="text-gray-600 italic">{{ request?.notes }}</p>
+    </div>
   </div>
 
   <div class="mt-6 flex justify-end gap-4">

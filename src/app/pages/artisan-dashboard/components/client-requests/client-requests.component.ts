@@ -5,6 +5,8 @@ import { RouterModule } from "@angular/router";
 import { ReservationResponseDto } from "../../../../models/reservation.model";
 import { ReservationService } from "../../../../components/services/reservation.service";
 import { AuthService } from "../../../../components/services/auth.service";
+import { ArtisanSuggestionDialogComponent } from "./artisan-suggestion-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
 
 @Component({
   selector: "app-client-requests",
@@ -18,7 +20,8 @@ export class ClientRequestsComponent implements OnInit {
 
   constructor(
     private reservationService: ReservationService,
-    private authService: AuthService
+    private authService: AuthService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -63,7 +66,7 @@ export class ClientRequestsComponent implements OnInit {
     if (!requestId) return;
 
     this.reservationService
-      .updateReservationStatus(requestId, "IN_PROGRESS")
+      .updateReservationStatus(requestId, "ACCEPTED")
       .subscribe({
         next: () => {
           const currentUser = this.authService.currentUserValue;
@@ -78,20 +81,58 @@ export class ClientRequestsComponent implements OnInit {
   onDeclineRequest(requestId: number) {
     if (!requestId) return;
 
-    if (confirm("Are you sure you want to decline this request?")) {
-      this.reservationService
-        .updateReservationStatus(requestId, "CANCELED")
-        .subscribe({
-          next: () => {
-            const currentUser = this.authService.currentUserValue;
-            if (currentUser?.id) {
-              this.loadRequests(currentUser.id);
-            }
-          },
-          error: (error) => console.error("Error declining request:", error),
-        });
-    }
+    const dialogRef = this.dialog.open(ArtisanSuggestionDialogComponent, {
+      width: "450px",
+      maxWidth: "90vw",
+      panelClass: ["custom-dialog-panel"],
+      hasBackdrop: true,
+      disableClose: true,
+      data: {
+        proposedCompletionDate: null,
+        notes: "",
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.reservationService
+          .updateReservationStatus(
+            requestId,
+            "SUGGESTED_BY_ARTISAN",
+            result.notes,
+            result.proposedCompletionDate
+          )
+          .subscribe({
+            next: () => {
+              const currentUser = this.authService.currentUserValue;
+              if (currentUser?.id) {
+                this.loadRequests(currentUser.id);
+              }
+            },
+            error: (error) =>
+              console.error("Error suggesting new date:", error),
+          });
+      }
+    });
   }
+
+  // onDeclineRequest(requestId: number) {
+  //   if (!requestId) return;
+
+  //   if (confirm("Are you sure you want to decline this request?")) {
+  //     this.reservationService
+  //       .updateReservationStatus(requestId, "CANCELED")
+  //       .subscribe({
+  //         next: () => {
+  //           const currentUser = this.authService.currentUserValue;
+  //           if (currentUser?.id) {
+  //             this.loadRequests(currentUser.id);
+  //           }
+  //         },
+  //         error: (error) => console.error("Error declining request:", error),
+  //       });
+  //   }
+  // }
 
   onRequestMoreInfo(requestId: number) {
     console.log("More info requested for:", requestId);
