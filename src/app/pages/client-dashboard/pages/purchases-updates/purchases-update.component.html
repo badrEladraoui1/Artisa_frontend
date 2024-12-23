@@ -2,8 +2,9 @@ purchases-update.component.html
 <div class="bg-white rounded-lg shadow p-6">
   <h2 class="text-xl font-bold text-dark-blue mb-6">Service History</h2>
 
-  <!-- Add this after the loading state -->
+  <!-- Stats -->
   <div *ngIf="!isLoading" class="mb-4 p-2 bg-gray-100 rounded text-xs">
+    <p>In Progress: {{ inProgressReservations.length }}</p>
     <p>Completed: {{ completedReservations.length }}</p>
     <p>Canceled: {{ canceledReservations.length }}</p>
     <p>Suggested: {{ suggestedReservations.length }}</p>
@@ -19,7 +20,8 @@ purchases-update.component.html
     *ngIf="
       !isLoading &&
       completedReservations.length === 0 &&
-      canceledReservations.length === 0
+      canceledReservations.length === 0 &&
+      inProgressReservations.length === 0
     "
     class="flex flex-col items-center justify-center py-12 text-gray-600"
   >
@@ -71,6 +73,59 @@ purchases-update.component.html
             >
               Proceed to Payment
             </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- In Progress Services -->
+  <div *ngIf="inProgressReservations.length > 0" class="mb-8">
+    <h3 class="text-lg font-semibold text-dark-blue mb-4">
+      Services In Progress
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div
+        *ngFor="let reservation of inProgressReservations"
+        class="bg-gray-50 rounded-lg p-4"
+      >
+        <div class="flex justify-between items-start">
+          <div>
+            <h4 class="text-lg font-semibold text-dark-blue">
+              {{ reservation.serviceName }}
+            </h4>
+            <p class="text-bright-blue font-medium">
+              {{ reservation.artisanName }}
+            </p>
+          </div>
+          <span class="px-2 py-1 text-sm rounded-full bg-blue-500 text-white">
+            In Progress
+          </span>
+        </div>
+
+        <div class="mt-4 space-y-2 text-sm text-gray-600">
+          <p>
+            📅 Started: {{ reservation.dateModification | date : "medium" }}
+          </p>
+          <p>
+            🎯 Due Date:
+            {{ reservation.proposedCompletionDate | date : "medium" }}
+          </p>
+          <p>💰 Total Price: ${{ reservation.servicePrice }}</p>
+
+          <!-- Payment Status -->
+          <div class="mt-3 bg-white rounded p-3 border border-green-100">
+            <p class="font-medium text-green-600 mb-1">Payment Status:</p>
+            <p class="text-gray-600">Platform Fee Paid</p>
+          </div>
+
+          <!-- Notes if any -->
+          <div
+            *ngIf="reservation.notes"
+            class="mt-3 bg-white rounded p-3 border border-gray-100"
+          >
+            <p class="font-medium text-gray-700 mb-1">Notes:</p>
+            <p class="text-gray-600">{{ reservation.notes }}</p>
           </div>
         </div>
       </div>

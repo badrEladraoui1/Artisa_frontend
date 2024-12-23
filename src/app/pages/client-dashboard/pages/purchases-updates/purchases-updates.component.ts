@@ -19,6 +19,8 @@ export class PurchasesUpdateComponent implements OnInit {
   canceledReservations: ReservationResponseDto[] = [];
   suggestedReservations: ReservationResponseDto[] = [];
   acceptedReservations: ReservationResponseDto[] = [];
+  inProgressReservations: ReservationResponseDto[] = [];
+
   isLoading = true;
 
   constructor(
@@ -51,6 +53,8 @@ export class PurchasesUpdateComponent implements OnInit {
         this.reservationService.getClientSuggestedByArtisandReservations(
           clientId
         ),
+      inProgress:
+        this.reservationService.getClientInProgressReservations(clientId),
       accepted: this.reservationService.getClientAcceptedReservations(clientId),
     }).subscribe({
       next: (result) => {
@@ -58,6 +62,7 @@ export class PurchasesUpdateComponent implements OnInit {
         this.canceledReservations = result.canceled;
         this.suggestedReservations = result.suggested;
         this.acceptedReservations = result.accepted;
+        this.inProgressReservations = result.inProgress;
         this.isLoading = false;
       },
       error: (error) => {

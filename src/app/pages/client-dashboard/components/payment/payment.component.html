@@ -11,20 +11,20 @@
       <div class="flex justify-between mb-2">
         <span>Service Price:</span>
         <span class="font-semibold"
-          >${{ reservation.servicePrice?.toFixed(2) }}</span
+          >${{ reservation.servicePrice.toFixed(2) }}</span
         >
       </div>
       <div class="flex justify-between mb-2 text-purple-600">
         <span>Platform Fee (20%):</span>
-        <span class="font-semibold">${{ platformFee?.toFixed(2) }}</span>
+        <span class="font-semibold">${{ platformFee.toFixed(2) }}</span>
       </div>
       <div class="flex justify-between text-green-600 font-medium">
         <span>Amount to Pay Now:</span>
-        <span>${{ platformFee?.toFixed(2) }}</span>
+        <span>${{ platformFee.toFixed(2) }}</span>
       </div>
       <div class="mt-4 text-sm text-gray-500">
         <p>
-          * The remaining ${{ remainingAmount?.toFixed(2) }} will be handled
+          * The remaining ${{ remainingAmount.toFixed(2) }} will be handled
           directly between you and the artisan.
         </p>
       </div>
@@ -40,7 +40,7 @@
           <input
             type="radio"
             name="paymentMethod"
-            value="card"
+            value="CARD"
             [(ngModel)]="selectedPaymentMethod"
             class="mr-3"
           />
@@ -52,7 +52,7 @@
           <input
             type="radio"
             name="paymentMethod"
-            value="paypal"
+            value="PAYPAL"
             [(ngModel)]="selectedPaymentMethod"
             class="mr-3"
           />
@@ -65,7 +65,7 @@
     </div>
 
     <!-- Card Details Form -->
-    <div *ngIf="selectedPaymentMethod === 'card'" class="space-y-4 mb-6">
+    <div *ngIf="selectedPaymentMethod === 'CARD'" class="space-y-4 mb-6">
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">
           Card Number
@@ -109,7 +109,7 @@
     </div>
 
     <!-- PayPal Form -->
-    <div *ngIf="selectedPaymentMethod === 'paypal'" class="space-y-4 mb-6">
+    <div *ngIf="selectedPaymentMethod === 'PAYPAL'" class="space-y-4 mb-6">
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">
           PayPal Email
@@ -141,7 +141,9 @@
         class="px-6 py-2 bg-bright-blue text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
       >
         <span *ngIf="isProcessing" class="animate-spin">⌛</span>
-        {{ isProcessing ? "Processing..." : "Pay $" + platformFee?.toFixed(2) }}
+        {{
+          isProcessing ? "Processing..." : "Pay MAD" + platformFee.toFixed(2)
+        }}
       </button>
     </div>
   </div>

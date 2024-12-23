@@ -9,6 +9,8 @@ import {
 } from "@angular/material/dialog";
 import { ReservationResponseDto } from "../../../../models/reservation.model";
 import { CardFormatPipe } from "../../../../utils/card-format.pipe";
+import { PaymentService } from "../../../../components/services/payment.service";
+import { PaymentRequestDto } from "../../../../models/payment.model";
 
 @Component({
   selector: "app-payment",
@@ -17,7 +19,7 @@ import { CardFormatPipe } from "../../../../utils/card-format.pipe";
   templateUrl: "./payment.component.html",
 })
 export class PaymentComponent implements OnInit {
-  selectedPaymentMethod: "card" | "paypal" = "card";
+  selectedPaymentMethod: "CARD" | "PAYPAL" = "CARD";
   cardNumber = "";
   expiryDate = "";
   cvv = "";
@@ -28,7 +30,8 @@ export class PaymentComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<PaymentComponent>,
-    @Inject(MAT_DIALOG_DATA) public reservation: ReservationResponseDto
+    @Inject(MAT_DIALOG_DATA) public reservation: ReservationResponseDto,
+    private paymentService: PaymentService
   ) {}
 
   ngOnInit() {
@@ -54,7 +57,7 @@ export class PaymentComponent implements OnInit {
   }
 
   isValidPayment(): boolean {
-    if (this.selectedPaymentMethod === "paypal") {
+    if (this.selectedPaymentMethod === "PAYPAL") {
       return this.isValidEmail(this.paypalEmail);
     }
     return (
@@ -84,25 +87,60 @@ export class PaymentComponent implements OnInit {
   }
 
   onProceed() {
+    if (!this.isValidPayment()) return;
+
     this.isProcessing = true;
-    // Simulate payment processing
-    setTimeout(() => {
-      this.dialogRef.close({
-        success: true,
-        paymentMethod: this.selectedPaymentMethod,
-        amount: this.platformFee,
-        paymentDetails:
-          this.selectedPaymentMethod === "paypal"
-            ? { email: this.paypalEmail }
-            : {
-                cardNumber: this.cardNumber,
-                expiryDate: this.expiryDate,
-                cvv: this.cvv,
-              },
-      });
-    }, 2000);
+
+    const paymentData: PaymentRequestDto = {
+      reservationId: this.reservation.id,
+      paymentMethod: this.selectedPaymentMethod,
+      amount: this.platformFee,
+      paymentDetails:
+        this.selectedPaymentMethod === "PAYPAL"
+          ? {
+              paypalEmail: this.paypalEmail,
+            }
+          : {
+              cardNumber: this.cardNumber,
+              expiryDate: this.expiryDate,
+              cvv: this.cvv,
+              cardLastFour: this.cardNumber.slice(-4),
+            },
+    };
+
+    this.paymentService.processPayment(paymentData).subscribe({
+      next: (response) => {
+        this.isProcessing = false;
+        this.dialogRef.close({ success: true, transaction: response });
+      },
+      error: (error) => {
+        console.error("Payment failed:", error);
+        this.isProcessing = false;
+        alert("Payment failed. Please try again.");
+      },
+    });
   }
 }
+
+// onProceed() {
+//   this.isProcessing = true;
+//   // Simulate payment processing
+//   setTimeout(() => {
+//     this.dialogRef.close({
+//       success: true,
+//       paymentMethod: this.selectedPaymentMethod,
+//       amount: this.platformFee,
+//       paymentDetails:
+//         this.selectedPaymentMethod === "paypal"
+//           ? { email: this.paypalEmail }
+//           : {
+//               cardNumber: this.cardNumber,
+//               expiryDate: this.expiryDate,
+//               cvv: this.cvv,
+//             },
+//     });
+//   }, 2000);
+// }
 
 // import { Component, Input, OnInit } from "@angular/core";
 // import { CommonModule } from "@angular/common";

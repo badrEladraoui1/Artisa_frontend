@@ -108,6 +108,15 @@ export class ReservationService {
     );
   }
 
+  getClientInProgressReservations(
+    clientId: number
+  ): Observable<ReservationResponseDto[]> {
+    return this.http.get<ReservationResponseDto[]>(
+      `${this.apiUrl}/client/${clientId}/inprogress`,
+      { headers: this.getHeaders() }
+    );
+  }
+
   getClientCompletedReservations(
     clientId: number
   ): Observable<ReservationResponseDto[]> {
