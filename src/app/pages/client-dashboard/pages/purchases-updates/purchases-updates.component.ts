@@ -1,12 +1,16 @@
 import { Component, OnInit } from "@angular/core";
 import { RouterModule } from "@angular/router";
 import { forkJoin } from "rxjs";
-import { ReservationResponseDto } from "../../../../models/reservation.model";
+import {
+  CompletionConfirmationResponse,
+  ReservationResponseDto,
+} from "../../../../models/reservation.model";
 import { ReservationService } from "../../../../components/services/reservation.service";
 import { AuthService } from "../../../../components/services/auth.service";
 import { MatDialog } from "@angular/material/dialog";
 import { PaymentComponent } from "../../components/payment/payment.component";
 import { CommonModule } from "@angular/common";
+import { ReviewDialogComponent } from "../../components/review/review-dialog.component";
 
 @Component({
   selector: "app-purchases-update",
@@ -31,6 +35,49 @@ export class PurchasesUpdateComponent implements OnInit {
 
   ngOnInit() {
     this.initializeData();
+  }
+
+  onClientConfirmCompletion(reservationId: number) {
+    this.reservationService
+      .confirmCompletion(reservationId, "CLIENT")
+      .subscribe({
+        next: (response: CompletionConfirmationResponse) => {
+          if (response.bothConfirmed) {
+            this.openReviewDialog(response);
+          } else {
+            alert(
+              "Thank you for confirming! Waiting for artisan confirmation."
+            );
+            this.refreshData();
+          }
+        },
+        error: (error) => {
+          console.error("Error confirming completion:", error);
+          alert("Failed to confirm completion. Please try again.");
+        },
+      });
+  }
+
+  private openReviewDialog(reservation: ReservationResponseDto) {
+    const dialogRef = this.dialog.open(ReviewDialogComponent, {
+      width: "500px",
+      data: { artisanName: reservation.artisanName },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.reservationService.submitReview(reservation.id, result).subscribe({
+          next: () => {
+            alert("Thank you for your review!");
+            this.refreshData();
+          },
+          error: (error) => {
+            console.error("Error submitting review:", error);
+            alert("Failed to submit review. Please try again.");
+          },
+        });
+      }
+    });
   }
 
   private initializeData() {
@@ -139,57 +186,3 @@ export class PurchasesUpdateComponent implements OnInit {
     }
   }
 }
-
-// // purchases-update.component.ts
-// import { Component, OnInit } from "@angular/core";
-// import { CommonModule, DatePipe } from "@angular/common";
-// import { RouterModule } from "@angular/router";
-// import { ReservationResponseDto } from "../../../../models/reservation.model";
-// import { ReservationService } from "../../../../components/services/reservation.service";
-// import { AuthService } from "../../../../components/services/auth.service";
-// import { forkJoin } from "rxjs";
-
-// @Component({
-//   selector: "app-purchases-update",
-//   standalone: true,
-//   imports: [CommonModule, RouterModule],
-//   templateUrl: "./purchases-update.component.html",
-// })
-// export class PurchasesUpdateComponent implements OnInit {
-//   completedReservations: ReservationResponseDto[] = [];
-//   canceledReservations: ReservationResponseDto[] = [];
-//   isLoading = true;
-
-//   constructor(
-//     private reservationService: ReservationService,
-//     private authService: AuthService
-//   ) {}
-
-//   ngOnInit() {
-//     const currentUser = this.authService.currentUserValue;
-//     if (currentUser) {
-//       this.loadReservationsHistory(currentUser.id);
-//     }
-//   }
-
-//   loadReservationsHistory(clientId: number) {
-//     this.isLoading = true;
-
-//     // Using forkJoin to make parallel requests
-//     forkJoin({
-//       completed:
-//         this.reservationService.getClientCompletedReservations(clientId),
-//       canceled: this.reservationService.getClientCanceledReservations(clientId),
-//     }).subscribe({
-//       next: (result) => {
-//         this.completedReservations = result.completed;
-//         this.canceledReservations = result.canceled;
-//         this.isLoading = false;
-//       },
-//       error: (error) => {
-//         console.error("Error loading reservation history:", error);
-//         this.isLoading = false;
-//       },
-//     });
-//   }
-// }

@@ -1,0 +1,77 @@
+<div class="bg-white rounded-lg shadow p-6">
+  <h2 class="text-xl font-bold text-dark-blue mb-6">Completed Services</h2>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+    <div class="animate-spin text-bright-blue">⌛</div>
+  </div>
+
+  <!-- No Completed Services Message -->
+  <div
+    *ngIf="!isLoading && (!completedReservations || completedReservations.length === 0)"
+    class="flex flex-col items-center justify-center py-12 text-gray-600"
+  >
+    <p class="text-lg">No completed services found.</p>
+    <a routerLink="/browse" class="mt-4 text-bright-blue hover:text-orange">
+      Browse Available Services
+    </a>
+  </div>
+
+  <!-- Completed Services Grid -->
+  <div
+    *ngIf="!isLoading && completedReservations && completedReservations.length > 0"
+    class="grid grid-cols-1 md:grid-cols-2 gap-6"
+  >
+    <div
+      *ngFor="let reservation of completedReservations"
+      class="bg-gray-50 rounded-lg p-4"
+    >
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-lg font-semibold text-dark-blue">
+            {{ reservation.serviceName }}
+          </h3>
+          <p class="text-bright-blue font-medium">
+            {{ reservation.artisanName }}
+          </p>
+        </div>
+        <span class="px-2 py-1 text-sm rounded-full bg-green-500 text-white">
+          Completed
+        </span>
+      </div>
+
+      <div class="mt-4 space-y-2 text-sm text-gray-600">
+        <p class="flex items-center gap-2">
+          <span>📅</span> Created: {{ reservation.dateCreation | date : "medium"
+          }}
+        </p>
+        <p class="flex items-center gap-2 text-green-600">
+          <span>🎯</span> Completed on: {{ reservation.proposedCompletionDate |
+          date : "medium" }}
+        </p>
+        <p class="flex items-center gap-2">
+          <span>💰</span> ${{ reservation.servicePrice }}
+        </p>
+
+        <!-- Notes section -->
+        <div class="mt-4 bg-white rounded-lg p-3" *ngIf="reservation.notes">
+          <p class="text-sm font-medium text-gray-700 mb-1">Notes:</p>
+          <p class="text-gray-600 italic">{{ reservation.notes }}</p>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 mt-4">
+        <button
+          *ngIf="!reservation.reviewed"
+          (click)="openReviewDialog(reservation)"
+          class="px-4 py-2 bg-orange text-white rounded-lg hover:bg-yellow transition"
+        >
+          Leave Review
+        </button>
+        <div *ngIf="reservation.reviewed" class="text-green-600 font-medium">
+          Review Submitted
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

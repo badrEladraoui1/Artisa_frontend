@@ -38,6 +38,29 @@ export class ClientRequestsComponent implements OnInit {
     }
   }
 
+  onArtisanConfirmCompletion(requestId: number) {
+    if (!requestId) return;
+
+    this.reservationService.confirmCompletion(requestId, "ARTISAN").subscribe({
+      next: (response) => {
+        if (response.bothConfirmed) {
+          alert("Service marked as completed! Both parties have confirmed.");
+        } else {
+          alert("Thank you for confirming! Waiting for client confirmation.");
+        }
+        this.loadRequests(this.authService.currentUserValue!.id);
+      },
+      error: (error) => {
+        console.error("Error confirming completion:", error);
+        alert("Failed to confirm completion. Please try again.");
+      },
+    });
+  }
+
+  onConfirmCompletion(requestId: number) {
+    this.onArtisanConfirmCompletion(requestId);
+  }
+
   loadRequests(artisanId: number) {
     console.log("Starting request load for artisan:", artisanId);
     this.reservationService.getArtisanReservations(artisanId).subscribe({
