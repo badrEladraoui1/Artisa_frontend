@@ -11,7 +11,9 @@ import { ReservationResponseDto } from "../../../../models/reservation.model";
 })
 export class RequestCardComponent {
   @Input() request: ReservationResponseDto | null = null;
+  @Input() isArtisan: boolean = false;
   @Output() accept = new EventEmitter<number>();
   @Output() decline = new EventEmitter<number>();
   @Output() moreInfo = new EventEmitter<number>();
+  @Output() confirmCompletion = new EventEmitter<number>();
 }

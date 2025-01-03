@@ -1,8 +1,10 @@
 import { Injectable } from "@angular/core";
 import {
+  CompletionConfirmationResponse,
   CreateReservationDto,
   ReservationResponseDto,
   ReservationStatus,
+  ReviewDto,
   UpdateReservationStatusDto,
 } from "../../models/reservation.model";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
@@ -22,13 +24,82 @@ export class ReservationService {
     return new HttpHeaders().set("Authorization", `Bearer ${token}`);
   }
 
-  // createReservation(
-  //   data: CreateReservationDto
-  // ): Observable<ReservationResponseDto> {
-  //   return this.http.post<ReservationResponseDto>(this.apiUrl, data, {
-  //     headers: this.getHeaders(),
-  //   });
+  confirmCompletion(
+    reservationId: number,
+    userType: "CLIENT" | "ARTISAN"
+  ): Observable<CompletionConfirmationResponse> {
+    return this.http
+      .post<CompletionConfirmationResponse>(
+        `${
+          this.apiUrl
+        }/${reservationId}/confirm-completion/${userType.toLowerCase()}`,
+        {},
+        { headers: this.getHeaders() }
+      )
+      .pipe(
+        tap((response) =>
+          console.log(`${userType} confirmation response:`, response)
+        ),
+        catchError((error) => {
+          console.error(`Error during ${userType} confirmation:`, error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+  getArtisanCompletedReviewedReservations(
+    artisanId: number
+  ): Observable<ReviewDto[]> {
+    return this.http.get<ReviewDto[]>(
+      `${this.apiUrl}/artisan/${artisanId}/completed-reviews`,
+      {
+        headers: this.getHeaders(),
+      }
+    );
+  }
+
+  // submitReview(
+  //   reservationId: number,
+  //   review: { rating: number; comment: string }
+  // ): Observable<any> {
+  //   return this.http
+  //     .post(`${this.apiUrl}/${reservationId}/review`, review, {
+  //       headers: this.getHeaders(),
+  //     })
+  //     .pipe(
+  //       tap((response) => console.log("Review submitted:", response)),
+  //       catchError((error) => {
+  //         console.error("Error submitting review:", error);
+  //         return throwError(() => error);
+  //       })
+  //     );
   // }
+
+  // In your service
+  submitReview(
+    reservationId: number,
+    review: { rating: number; comment: string }
+  ): Observable<any> {
+    return this.http
+      .post(
+        `${this.apiUrl}/${reservationId}/review`,
+        {
+          reservationId: reservationId,
+          rating: review.rating,
+          comment: review.comment,
+        },
+        {
+          headers: this.getHeaders(),
+        }
+      )
+      .pipe(
+        tap((response) => console.log("Review submitted:", response)),
+        catchError((error) => {
+          console.error("Error submitting review:", error);
+          return throwError(() => error);
+        })
+      );
+  }
 
   createReservation(
     data: CreateReservationDto
@@ -41,14 +112,6 @@ export class ReservationService {
         data.proposedCompletionDate
       ),
     };
-
-    // const formattedData = {
-    //   ...data,
-    //   proposedCompletionDate:
-    //     data.proposedCompletionDate instanceof Date
-    //       ? data.proposedCompletionDate.toISOString()
-    //       : new Date(data.proposedCompletionDate).toISOString(),
-    // };
 
     return this.http
       .post<ReservationResponseDto>(this.apiUrl, formattedData, {
@@ -143,18 +206,6 @@ export class ReservationService {
       { headers: this.getHeaders() }
     );
   }
-
-  // updateReservationStatus(
-  //   reservationId: number,
-  //   status: string,
-  //   notes?: string
-  // ): Observable<ReservationResponseDto> {
-  //   return this.http.put<ReservationResponseDto>(
-  //     `${this.apiUrl}/${reservationId}/status`,
-  //     { status, notes },
-  //     { headers: this.getHeaders() }
-  //   );
-  // }
 
   updateReservationStatus(
     reservationId: number,

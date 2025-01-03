@@ -24,6 +24,8 @@ import { RequestsComponent } from "./pages/artisan-dashboard/pages/requests/requ
 import { ServiceConfirmationComponent } from "./components/service-confirmation/service-confirmation-component";
 import { ClientRequestsComponent } from "./pages/artisan-dashboard/components/client-requests/client-requests.component";
 import { PurchasesUpdateComponent } from "./pages/client-dashboard/pages/purchases-updates/purchases-updates.component";
+import { CompletedServicesComponent } from "./pages/client-dashboard/pages/completed services/CompletedServicesComponent";
+import { CompletedServicesComponentForArtisan } from "./pages/artisan-dashboard/pages/completed services/CompletedServicesComponent";
 
 export const routes: Routes = [
   {
@@ -76,6 +78,10 @@ export const routes: Routes = [
         component: ClientRequestsComponent,
       },
       {
+        path: "completed-services-artisan", // New route
+        component: CompletedServicesComponentForArtisan,
+      },
+      {
         path: "profile",
         component: ArtisanProfileComponent,
       },
@@ -101,6 +107,10 @@ export const routes: Routes = [
       {
         path: "profile",
         component: ClientProfileComponent,
+      },
+      {
+        path: "completed-services", // New route
+        component: CompletedServicesComponent,
       },
     ],
   },

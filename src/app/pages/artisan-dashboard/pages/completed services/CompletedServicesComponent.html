@@ -1,0 +1,132 @@
+<div class="bg-white rounded-lg shadow-lg p-8">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-dark-blue">My Completed Services</h2>
+    <div class="flex items-center space-x-4">
+      <span class="text-gray-600">Total Reviews:</span>
+      <span class="bg-bright-blue text-white px-3 py-1 rounded-full">
+        {{ completedReviews.length }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Overall Rating Summary -->
+  <div
+    *ngIf="completedReviews.length > 0"
+    class="bg-gray-100 rounded-lg p-4 mb-6 flex items-center justify-between"
+  >
+    <div class="flex items-center">
+      <div class="text-4xl font-bold text-bright-blue mr-4">
+        {{ averageRating | number:'1.1-1' }}
+      </div>
+      <div>
+        <div class="flex">
+          <span
+            *ngFor="let star of [1,2,3,4,5]"
+            class="text-3xl"
+            [class.text-yellow-500]="star <= averageRating"
+            [class.text-gray-300]="star > averageRating"
+          >
+            ★
+          </span>
+        </div>
+        <p class="text-gray-600 mt-1">
+          Average Rating from {{ completedReviews.length }} Reviews
+        </p>
+      </div>
+    </div>
+    <div class="text-right">
+      <p class="text-sm text-gray-600">Rating Breakdown</p>
+      <div class="flex items-center space-x-2 mt-2">
+        <div
+          *ngFor="let count of ratingCounts; let i = index"
+          class="flex items-center"
+        >
+          <span class="text-sm mr-1">{{ 5 - i }}★</span>
+          <div class="w-24 bg-gray-200 rounded-full h-2.5">
+            <div
+              class="bg-yellow-500 h-2.5 rounded-full"
+              [style.width.%]="(count / completedReviews.length) * 100"
+            ></div>
+          </div>
+          <span class="text-sm ml-2">{{ count }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+    <div class="animate-spin text-bright-blue text-4xl">⌛</div>
+  </div>
+
+  <!-- No Reviews Message -->
+  <div
+    *ngIf="!isLoading && (!completedReviews || completedReviews.length === 0)"
+    class="flex flex-col items-center justify-center py-12 text-gray-600"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-20 w-20 text-gray-300 mb-4"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+      />
+    </svg>
+    <p class="text-xl">No reviews for completed services yet</p>
+    <p class="text-gray-500 mt-2">Keep providing great service!</p>
+  </div>
+
+  <!-- Reviews Grid -->
+  <div
+    *ngIf="!isLoading && completedReviews && completedReviews.length > 0"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+  >
+    <div
+      *ngFor="let review of completedReviews"
+      class="bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+    >
+      <div class="p-6">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h3 class="text-lg font-semibold text-dark-blue">
+              {{ review.serviceName }}
+            </h3>
+            <p class="text-gray-600 text-sm">
+              Reviewed by {{ review.reviewerName }}
+            </p>
+          </div>
+          <div class="flex">
+            <span
+              *ngFor="let star of [1,2,3,4,5]"
+              class="text-2xl"
+              [class.text-yellow-500]="star <= review.rating"
+              [class.text-gray-300]="star > review.rating"
+            >
+              ★
+            </span>
+          </div>
+        </div>
+
+        <!-- Review Comment -->
+        <div *ngIf="review.comment" class="bg-gray-50 rounded-lg p-4 mb-4">
+          <p class="text-gray-700 italic">"{{ review.comment }}"</p>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <p class="text-sm text-gray-500">
+            📅 {{ review.reviewDate | date:'mediumDate' }}
+          </p>
+          <p class="text-sm text-bright-blue font-medium">
+            💰 ${{ review.servicePrice }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

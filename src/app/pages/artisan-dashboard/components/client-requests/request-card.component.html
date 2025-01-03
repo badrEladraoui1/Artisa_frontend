@@ -1,4 +1,5 @@
 <div class="bg-white rounded-lg shadow p-6">
+  <!-- Header -->
   <div class="flex justify-between items-start">
     <div>
       <h3 class="text-xl font-semibold text-gray-800">
@@ -25,20 +26,8 @@
     </span>
   </div>
 
-  <!-- <div class="mt-4 space-y-2 text-sm text-gray-600">
-    <p class="flex items-center gap-2">
-      <span>📅</span> {{ request?.dateCreation | date : "medium" }}
-    </p>
-    <p class="flex items-center gap-2">
-      <span>💰</span> ${{ request?.servicePrice }}
-    </p>
-    <p class="mt-2 text-gray-700" *ngIf="request?.notes">
-      {{ request?.notes }}
-    </p>
-  </div> -->
-
+  <!-- Service Info -->
   <div class="mt-4 space-y-2 text-sm text-gray-600">
-    <!-- Add Completion Date -->
     <p class="flex items-center gap-2">
       <span>📅</span> Created: {{ request?.dateCreation | date : "medium" }}
     </p>
@@ -50,7 +39,119 @@
       <span>💰</span> ${{ request?.servicePrice }}
     </p>
 
-    <!-- Notes section with better styling -->
+    <!-- Completion Status for IN_PROGRESS -->
+    <div
+      *ngIf="request?.status === 'IN_PROGRESS'"
+      class="mt-4 bg-blue-50 rounded-lg p-3 border border-blue-100"
+    >
+      <p class="text-sm font-medium text-blue-700 mb-2">Completion Status:</p>
+      <div class="space-y-1">
+        <p class="text-gray-700">
+          <span class="inline-block w-5">{{
+            request?.artisanConfirmed ? "✅" : "⏳"
+          }}</span>
+          Artisan: {{ request?.artisanConfirmed ? "Confirmed" : "Pending" }}
+        </p>
+        <p class="text-gray-700">
+          <span class="inline-block w-5">{{
+            request?.clientConfirmed ? "✅" : "⏳"
+          }}</span>
+          Client: {{ request?.clientConfirmed ? "Confirmed" : "Pending" }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="mt-4 bg-gray-50 rounded-lg p-3" *ngIf="request?.notes">
+      <p class="text-sm font-medium text-gray-700 mb-1">Client Notes:</p>
+      <p class="text-gray-600 italic">{{ request?.notes }}</p>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="mt-6 flex justify-end gap-4">
+    <!-- Accept/Decline buttons -->
+    <button
+      *ngIf="request?.status === 'PENDING'"
+      (click)="accept.emit(request?.id)"
+      class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+    >
+      Accept
+    </button>
+    <button
+      *ngIf="request?.status === 'PENDING'"
+      (click)="decline.emit(request?.id)"
+      class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+    >
+      Decline
+    </button>
+
+    <!-- Completion Button -->
+    <button
+      *ngIf="
+        request?.status === 'IN_PROGRESS' &&
+        ((isArtisan && !request?.artisanConfirmed) ||
+          (!isArtisan && !request?.clientConfirmed))
+      "
+      (click)="confirmCompletion.emit(request?.id)"
+      class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+    >
+      {{ isArtisan ? "Mark as Completed" : "Confirm Completion" }}
+    </button>
+
+    <!-- Waiting Message -->
+    <div
+      *ngIf="
+        request?.status === 'IN_PROGRESS' &&
+        ((isArtisan && request?.artisanConfirmed) ||
+          (!isArtisan && request?.clientConfirmed))
+      "
+      class="px-4 py-2 text-green-600 font-medium"
+    >
+      ✓ Waiting for {{ isArtisan ? "client" : "artisan" }} confirmation
+    </div>
+  </div>
+</div>
+
+<!-- <div class="bg-white rounded-lg shadow p-6">
+  <div class="flex justify-between items-start">
+    <div>
+      <h3 class="text-xl font-semibold text-gray-800">
+        {{ request?.clientName }}
+      </h3>
+      <p class="text-bright-blue font-medium">{{ request?.serviceName }}</p>
+    </div>
+    <span
+      class="px-3 py-1 rounded-full text-sm font-medium"
+      [ngClass]="{
+        'bg-green-500 text-white': request?.status === 'COMPLETED',
+        'bg-yellow text-dark-blue': request?.status === 'PENDING',
+        'bg-blue-500 text-white': request?.status === 'IN_PROGRESS',
+        'bg-purple-500 text-white': request?.status === 'SUGGESTED_BY_ARTISAN',
+        'bg-red-500 text-white': request?.status === 'CANCELED',
+        'bg-orange text-white': request?.status === 'ACCEPTED'
+      }"
+    >
+      {{
+        request?.status === "SUGGESTED_BY_ARTISAN"
+          ? "Date Suggested"
+          : request?.status
+      }}
+    </span>
+  </div>
+
+  <div class="mt-4 space-y-2 text-sm text-gray-600">
+    <p class="flex items-center gap-2">
+      <span>📅</span> Created: {{ request?.dateCreation | date : "medium" }}
+    </p>
+    <p class="flex items-center gap-2 text-green-600">
+      <span>🎯</span> Complete by:
+      {{ request?.proposedCompletionDate | date : "medium" }}
+    </p>
+    <p class="flex items-center gap-2">
+      <span>💰</span> ${{ request?.servicePrice }}
+    </p>
+
     <div class="mt-4 bg-gray-50 rounded-lg p-3" *ngIf="request?.notes">
       <p class="text-sm font-medium text-gray-700 mb-1">Client Notes:</p>
       <p class="text-gray-600 italic">{{ request?.notes }}</p>
@@ -72,5 +173,13 @@
     >
       Decline
     </button>
+
+    <button
+      *ngIf="request?.status === 'IN_PROGRESS'"
+      (click)="confirmCompletion.emit(request?.id)"
+      class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+    >
+      {{ isArtisan ? "Mark as Completed" : "Confirm Completion" }}
+    </button>
   </div>
-</div>
+</div> -->

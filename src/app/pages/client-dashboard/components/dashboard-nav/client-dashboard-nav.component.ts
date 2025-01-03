@@ -25,6 +25,13 @@ import { RouterModule } from "@angular/router";
             Purchases Updates
           </a>
           <a
+            routerLink="completed-services"
+            routerLinkActive="text-orange border-b-2 border-orange"
+            class="py-4 px-2 text-dark-blue hover:text-bright-blue transition-colors"
+          >
+            Completed Services
+          </a>
+          <a
             routerLink="profile"
             routerLinkActive="text-orange border-b-2 border-orange"
             class="py-4 px-2 text-dark-blue hover:text-bright-blue transition-colors"
